@@ -1,0 +1,34 @@
+{
+  "name": "openai-self",
+  "version": "1.0.11",
+  "description": "封装openai的api",
+  "scripts": {
+    "write": "node ./build/writeFile.js",
+    "build": "rollup -c ./rollup.config.js && npm run write",
+    "test": "node ./test.js"
+  },
+  "type": "module",
+  "main": "./openai-self.cjs.js",
+  "module": "./openai-self.esm.js",
+  "author": "yangss",
+  "dependencies": {
+    "proxy-agent": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@babel/plugin-syntax-import-assertions": "^7.20.0",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "openai",
+    "chatGPT",
+    "chatgpt",
+    "gpt-3",
+    "gpt3"
+  ]
+}
