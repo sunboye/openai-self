@@ -18,7 +18,7 @@
     // proxyUri: 'http://127.0.0.1:19180' // 代理服务器地址：非必填，科学上网时需要
     organizationId: '' // 组织机构Id：非必填
   });
-  console.log(await openai.getModels()) // 获取openai所用可用引擎并输出
+  console.log(await openai.getModels()) // 获取openai所用可用引擎并打印
 
   ```
 ### 接口说明
