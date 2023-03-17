@@ -22,3 +22,9 @@
 
   ```
 ### 接口说明
+
+[openai api文档官网入口](https://platform.openai.com/docs/api-reference)
+
+调用方法      |   封装接口   |       参数         |   说明
+:------------| :------------| :-----------------| :--------------
+getModels    | /v1/models   | 无                | 获取openai所有可用模型信息
