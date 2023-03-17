@@ -28,5 +28,9 @@
     "chatgpt",
     "gpt-3",
     "gpt3"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sunboye/openai-self.git"
+  }
 }

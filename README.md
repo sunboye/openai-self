@@ -3,9 +3,6 @@
 ### 背景
   基于openai开放api封装，旨在可以更加简单的调用openai的api接口
 
-### 源码地址
-  [github/openai-self入口](https://github.com/sunboye/openai-self)
-
 ### 安装
   `npm i openai-self`
 
