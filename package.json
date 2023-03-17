@@ -2,15 +2,13 @@
   "name": "openai-self",
   "version": "1.0.11",
   "description": "封装openai的api",
+  "author": "yangss",
   "scripts": {
     "write": "node ./build/writeFile.js",
     "build": "rollup -c ./rollup.config.js && npm run write",
     "test": "node ./test.js"
   },
   "type": "module",
-  "main": "./openai-self.cjs.js",
-  "module": "./openai-self.esm.js",
-  "author": "yangss",
   "dependencies": {
     "proxy-agent": "^5.0.0"
   },
