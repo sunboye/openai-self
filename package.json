@@ -31,6 +31,9 @@
     "gpt-3",
     "gpt3"
   ],
+  "engines": {
+    "node": ">=16.16.0"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:sunboye/openai-self.git"

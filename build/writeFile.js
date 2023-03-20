@@ -16,7 +16,8 @@ function copyFileTo(source, target) {
 function creatPackageJson() {
     let jsonData = readPackageJson();
     // delete jsonData.dependencies
-    delete jsonData.scripts
+    jsonData.scripts && delete jsonData.scripts
+    jsonData.engines && delete jsonData.engines
     jsonData.private && delete jsonData.private
     jsonData.type && delete jsonData.type
     jsonData.devDependencies && delete jsonData.devDependencies
