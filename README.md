@@ -27,9 +27,17 @@ getModels           | /v1/models   | 无                | 获取openai所有可�
 createCustomRequest | any          | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
 ### 例子
+
+> 使用commonJS规范导入模块时，推荐回调函数式写法，否则可能引起异常；
+> 使用ES6规范导入模块时, async/await 和 回调函数接收返回数据都可以；
+
 - getModels()
 ```javascript
+  // 第一种用法
+  copenai.getModels((res) => {console.log(res)})
+  // 第二种用法：仅支持import导入模块时使用
   console.log(await openai.getModels()) // 获取openai所用可用引擎
+  
 ```
 - createCustomRequest()
 ```javascript

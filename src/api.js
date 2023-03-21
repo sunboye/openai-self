@@ -39,6 +39,10 @@ const getHttpOptions = (enumConf) => {
 
 }
 
+const returnResData = (callback) => {
+
+}
+
 const createRequest = (config) => {
   return new Promise((reslove, reject) => {
     $axios.request(config).then((res) =>{
@@ -72,11 +76,14 @@ class OpenAIInstance {
     }
   }
   // 获取引擎列表
-  async getModels() {
+  async getModels(callback) {
     const option = getHttpOptions(enumMap.interface.modelList)
     const reqData = await createRequest(option)
-    console.log(reqData)
-    return reqData
+    if (callback && typeof callback === 'function') {
+      callback(reqData)
+    } else {
+      return reqData
+    }
   }
   // 自定义请求
   async createCustomRequest(url, options, callback) {
