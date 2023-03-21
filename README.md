@@ -15,7 +15,7 @@
     // proxyUri: '' // 代理服务器地址：非必填，科学上网时需要。格式：'protocol://agent-ip:port'
     organizationId: '' // 组织机构Id：非必填
   });
-  console.log(await openai.getModels()) // 获取openai所用可用引擎并打印到控制台
+  openai.getModels((res) => {console.log(res)}) // 获取openai所用可用引擎并打印到控制台
 ```
 ### 接口说明
 
@@ -34,7 +34,7 @@ createCustomRequest | any          | 1. url: 类型-string，必填；<br/>2. co
 - getModels()
 ```javascript
   // 第一种用法
-  copenai.getModels((res) => {console.log(res)})
+  openai.getModels((res) => {console.log(res)})
   // 第二种用法：仅支持import导入模块时使用
   console.log(await openai.getModels()) // 获取openai所用可用引擎
   
