@@ -37,7 +37,7 @@ createCustomRequest | any          | 1. url: 类型-string，必填；<br/>2. co
   openai.createCustomRequest('/v1/models', (res) => { console.log(res) })
   // 第二种使用方法
   console.log(await openai.createCustomRequest('/v1/models'))
-  // 第四种使用方法：传入config对象，具体参数参照axios的config参数
+  // 第三种使用方法：传入config对象，具体参数参照axios的config参数
   const params = {
     "model": "text-davinci-003",
     "prompt": "Hello"
