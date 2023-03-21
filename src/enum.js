@@ -4,23 +4,23 @@ export default {
   interface: {
     modelList: {
       method: 'get',
-      url: `/v1/models`
+      url: '/v1/models'
     },
     postNomalCompletions: {
       method: 'post',
-      url: `/v1/completions`
+      url: '/v1/completions'
     },
     postHighCompletions: {
       method: 'post',
-      url: `/v1/chat/completions`
+      url: '/v1/chat/completions'
     },
     getImageByContent: {
       method: 'get',
-      url: `/v1/images/generations`
+      url: '/v1/images/generations'
     },
     postEdit: {
       method: 'post',
-      url: `/v1/edits`
+      url: '/v1/edits'
     },
     getModelById: (modelId) => {
       return {
