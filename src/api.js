@@ -4,6 +4,23 @@ import httpsProxyAgent from 'https-proxy-agent'
 import $axios  from 'axios'
 import pkg from '../package.json' assert { type: "json" }
 
+
+// 添加响应拦截器
+$axios.interceptors.response.use(function (response) {
+  // 对响应数据做点什么
+  console.log(response)
+  return {
+    data: response.data,
+    status: response.status,
+    msg: response.statusText,
+    success: response.status === 200
+  };
+}, function (error) {
+  // 对响应错误做点什么
+  return Promise.reject(
+    new Error(error));
+  });
+
 const getHttpOptions = (enumConf) => {
   const baseOptions = Object.assign({}, enumConf)
   if (enumConf &&  Object.keys(enumConf).length) {
@@ -59,9 +76,36 @@ class OpenAIInstance {
   async getModels() {
     const option = getHttpOptions(enumMap.interface.modelList)
     const reqData = await createRequest(option)
+    console.log(reqData)
     return reqData
   }
   // 自定义请求
-  async createCustomRequest(url, option, callback) {}
+  async createCustomRequest(url, options, callback) {
+    // 没传options
+    if (typeof options === 'function') {
+      callback = options
+    }
+    // 没传url
+    if (typeof url === 'object') {
+      options = url
+      url = options.url
+    }
+  
+    let params = {}
+    if (options !== null && typeof options === 'object') {
+      params = Object.assign(params, options, {url: url})
+    } else if (typeof url === 'string') {
+      params = Object.assign(params, {url: url})
+    } else {
+      params = Object.assign({}, params, {url: url})
+    }
+    const option = getHttpOptions(params)
+    const reqData = await createRequest(option)
+    if (callback && typeof callback === 'function') {
+      callback(reqData)
+    } else {
+      return reqData
+    }
+  }
 }
 export default OpenAIInstance

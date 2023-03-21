@@ -6,6 +6,11 @@ const openai = new openApi({
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-获取所有可用引擎-如果超时-请检查网络连接--------------')
-console.log(await openai.getModels())
+// console.log(await openai.getModels())
+// await openai.getModels()
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res) })
-// console.log(await openai.createCustomRequest('/v1/completions', {method: 'post'}))
+console.log(await openai.createCustomRequest('/v1/models'))
+// console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: {
+//   "model": "text-davinci-003",
+//   "prompt": "Hello"
+// }}))
