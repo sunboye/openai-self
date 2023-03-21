@@ -1,5 +1,6 @@
 const BASE_PATH = "https://api.openai.com"
 export default {
+  BASE_PATH: BASE_PATH,
   interface: {
     modelList: {
       method: 'get',
