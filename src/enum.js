@@ -4,28 +4,28 @@ export default {
   interface: {
     modelList: {
       method: 'get',
-      url: `${BASE_PATH}/v1/models`
+      url: `/v1/models`
     },
     postNomalCompletions: {
       method: 'post',
-      url: `${BASE_PATH}/v1/completions`
+      url: `/v1/completions`
     },
     postHighCompletions: {
       method: 'post',
-      url: `${BASE_PATH}/v1/chat/completions`
+      url: `/v1/chat/completions`
     },
     getImageByContent: {
       method: 'get',
-      url: `${BASE_PATH}/v1/images/generations`
+      url: `/v1/images/generations`
     },
     postEdit: {
       method: 'post',
-      url: `${BASE_PATH}/v1/edits`
+      url: `/v1/edits`
     },
     getModelById: (modelId) => {
       return {
         method: 'get',
-        url: `${BASE_PATH}/v1/models/${modelId}`
+        url: `/v1/models/${modelId}`
       }
     }
   },

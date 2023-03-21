@@ -1,105 +1,92 @@
 
 import enumMap from './enum.js'
-import http  from 'https'
 import proxyAgent from 'proxy-agent'
+import http from 'http'
+import https from 'https'
+import $axios  from 'axios'
 import pkg from '../package.json' assert { type: "json" }
 
-const getHttpOptions = (config, enumConf) => {
+$axios.interceptors.request.use(config => {
+  // loading
+  console.log(config)
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+const getHttpOptions = (enumConf) => {
   const baseOptions = Object.assign({}, enumConf)
-  if (baseOptions && !baseOptions.headers) {
-    baseOptions.headers = {}
-  }
   if (enumConf &&  Object.keys(enumConf).length) {
     baseOptions.method = enumConf.method || 'get'
-    if (enumConf.headers) {
-      baseOptions.headers = Object.assign({}, baseOptions.headers, enumConf.headers)
+    if (enumConf.url.indexOf('http://') === 0 || enumConf.url.indexOf('https://') === 0) {
+      baseOptions.url = enumConf.url
+    } else {
+      baseOptions.url = `${enumConf.url.indexOf('/') === 0 ? '' : '/'}${enumConf.url}`
     }
-    // agent来自于createCustomRequest时
-    if (enumConf.agent) {
-      baseOptions.agent = enumConf.agent
+    if (enumConf.headers) {
+      if (!baseOptions.headers) {
+        baseOptions.headers = {}
+      }
+      baseOptions.headers = Object.assign({}, enumConf.headers)
     }
   } else {
     baseOptions.method = 'get'
   }
-  if (config && Object.keys(config).length) {
-    if (!baseOptions.headers['User-Agent']) {
-      baseOptions.headers['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
-    }
-    if (!baseOptions.headers['Authorization']) {
-      baseOptions.headers['Authorization'] = `Bearer ${config.apiKey}`
-    }
-    if (!baseOptions.headers['OpenAI-Organization'] && config.organizationId) {
-      baseOptions.headers['OpenAI-Organization'] = config.organizationId
-    }
-    if (!baseOptions.headers['Content-Type']) {
-      baseOptions.headers['Content-Type'] = 'application/json'
-    }
-    if (!baseOptions.agent && config.agent) {
-      baseOptions.agent = config.agent
-    }
-  }
-  return {
-    url: enumConf.url,
-    option: baseOptions
-  }
+  return baseOptions
+
 }
 
-const isJsonToFormat = (str) => {
-  if (str && typeof str === 'string') {
-    try {
-      const obj = JSON.parse(str);
-      if (obj && typeof obj === 'object') {
-        return obj;
-      } else {
-        return str;
-      }
-    } catch (e) {
-      console.log('error：' + str + '!!!' + e);
-      return str;
-    }
-  } else {
-    return str
-  }
-}
-
-const createRequest = (url, option) => {
-  console.log(url)
-  console.log(option)
+const createRequest = (config) => {
   return new Promise((reslove, reject) => {
-    const req = http.request(url, option, (res) => {
-      let resStr = ''
-      console.log(res.statusCode)
-      res.on('data', (data) => {
-        resStr += data.toString()
-      })
-      res.on('end', () => {
-        reslove(isJsonToFormat(resStr))
-      })
+    config.url = "https://api.openai.com/v1/models"
+    $axios.request(config).then((res) =>{
+      reslove(res.data)
+    }).catch(e => {
+      reslove(e.message)
     })
-    req.on('error', (err) => {
-      reslove(err)
-    });
-    req.end()
   })
 }
 
 class OpenAIInstance {
   constructor (configuration) {
     this.configuration = configuration || {}
-    if (configuration && configuration.proxyUri) {
-      this.configuration.agent = new proxyAgent(configuration.proxyUri).on('error', err => {
-        throw err
-      })
-    }
     this.configuration.apiKey = configuration.apiKey || configuration.apikey
+    if (this.configuration.apiKey) {
+      $axios.defaults.baseURL = enumMap.BASE_PATH
+      // $axios.defaults.httpAgent = new http.Agent({ keepAlive: true })
+      $axios.defaults.httpsAgent = new https.Agent({ keepAlive: true })
+      // $axios.defaults.agent = new proxyAgent(configuration.proxy)
+      $axios.defaults.headers.common['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
+      $axios.defaults.headers.common['Authorization'] = `Bearer ${this.configuration.apiKey}`
+      if (this.configuration.organizationId) {
+        $axios.defaults.headers.common['OpenAI-Organization'] = configuration.organizationId
+      }
+      if (this.configuration.proxy) {
+        if (typeof this.configuration.proxy === 'object') {
+          $axios.defaults.proxy = this.configuration.proxy
+        } else if (typeof this.configuration.proxy === 'string') {
+          const urlObj = new URL(this.configuration.proxy)
+          $axios.defaults.proxy = {
+            protocol: urlObj.protocol && urlObj.protocol.indexOf(':') > -1 ? urlObj.protocol.split(':')[0]  : urlObj.protocol,
+            host: urlObj.hostname,
+            port: urlObj.port
+          }
+        }
+      }
+    } else {
+      const errMsg = 'OpenAIInstance is required apiKey'
+      const error = new Error(errMsg)
+      throw(error)
+    }
   }
   // 获取引擎列表
   async getModels() {
-    const {url , option} = getHttpOptions(this.configuration, enumMap.interface.modelList)
-    option.headers['Content-Type'] = 'application/json'
-    const reqData = await createRequest(url, option)
+    const option = getHttpOptions(enumMap.interface.modelList)
+    // option.headers['Content-Type'] = 'application/json'
+    const reqData = await createRequest(option)
     return reqData
   }
+  // 自定义请求
   async createCustomRequest(url, option, callback) {
     const errMsg = "ERROR: please check params, params is no valid, first param is url, it's required and the type is string"
     if (url && typeof url === 'string') {
