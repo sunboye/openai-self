@@ -112,7 +112,7 @@ class OpenAIInstance {
         param.model = 'text-davinci-003'
       }
       if (!param.max_tokens) {
-        param.max_tokens = 500
+        param.max_tokens = 350
       }
     } else {
       return new Error('param is not valid!!!')
