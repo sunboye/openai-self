@@ -39,10 +39,6 @@ const getHttpOptions = (enumConf) => {
 
 }
 
-const returnResData = (callback) => {
-
-}
-
 const createRequest = (config) => {
   return new Promise((reslove, reject) => {
     $axios.request(config).then((res) =>{
@@ -83,6 +79,33 @@ class OpenAIInstance {
       callback(reqData)
     } else {
       return reqData
+    }
+  }
+  async createNomalCompletions(msg, callback) {
+    // 没传msg
+    if (msg) {
+      const options = getHttpOptions(enumMap.interface.postNomalCompletions)
+      if (typeof msg === 'object') {
+        options.data = msg
+      } else if (typeof msg === 'string') {
+        options.data = {
+          // 默认model
+          model: "text-davinci-003",
+          prompt: msg
+        }
+      } else {
+        const error = 'params not valid,please check it'
+        return new Error(error)
+      }
+      const reqData = await createRequest(options)
+      if (callback && typeof callback === 'function') {
+        callback(reqData)
+      } else {
+        return reqData
+      }
+    } else {
+      const error = 'At least required one param'
+      return new Error(error)
     }
   }
   // 自定义请求
