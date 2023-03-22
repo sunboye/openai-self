@@ -16,9 +16,31 @@ $axios.interceptors.response.use(function (response) {
   };
 }, function (error) {
   // 对响应错误做点什么
-  return Promise.reject(
-    new Error(error));
-  });
+  return Promise.reject(new Error(error));
+});
+
+const initParams = (str, obj, func, key) => {
+  // 没传obj
+  if (typeof obj === 'function') {
+    func = obj
+  }
+  // 没传str
+  if (typeof str === 'object') {
+    obj = str
+    str = obj[key]
+  }
+
+  let params = {}
+  if (obj !== null && typeof obj === 'object') {
+    params = Object.assign(params, obj, {[key]: str})
+  } else if (typeof str === 'string') {
+    params = Object.assign(params, {[key]: str})
+  } else {
+    params = Object.assign({}, params, {[key]: str})
+  }
+  params.callback = func
+  return params
+}
 
 const getHttpOptions = (enumConf) => {
   const baseOptions = Object.assign({}, enumConf)
@@ -40,6 +62,7 @@ const getHttpOptions = (enumConf) => {
 }
 
 const createRequest = (config) => {
+  console.log(config)
   return new Promise((reslove, reject) => {
     $axios.request(config).then((res) =>{
       reslove(res)
@@ -74,66 +97,46 @@ class OpenAIInstance {
   // 获取引擎列表
   async getModels(callback) {
     const option = getHttpOptions(enumMap.interface.modelList)
-    const reqData = await createRequest(option)
+    const res = await createRequest(option)
+    const resData = res && res.success && res.data ? res.data.data : res
     if (callback && typeof callback === 'function') {
-      callback(reqData)
+      callback(resData)
     } else {
-      return reqData
+      return resData
     }
   }
-  async createNomalCompletions(msg, callback) {
-    // 没传msg
-    if (msg) {
-      const options = getHttpOptions(enumMap.interface.postNomalCompletions)
-      if (typeof msg === 'object') {
-        options.data = msg
-      } else if (typeof msg === 'string') {
-        options.data = {
-          // 默认model
-          model: "text-davinci-003",
-          prompt: msg
-        }
-      } else {
-        const error = 'params not valid,please check it'
-        return new Error(error)
+  async createNomalCompletions(msg, options, callback) {
+    const param = initParams(msg, options, callback, 'prompt')
+    if (param && param.prompt) {
+      if (!param.model) {
+        param.model = 'text-davinci-003'
       }
-      const reqData = await createRequest(options)
-      if (callback && typeof callback === 'function') {
-        callback(reqData)
-      } else {
-        return reqData
+      if (!param.max_tokens) {
+        param.max_tokens = 500
       }
     } else {
-      const error = 'At least required one param'
-      return new Error(error)
+      return new Error('param is not valid!!!')
+    }
+    const enumOptions = getHttpOptions(enumMap.interface.postNomalCompletions)
+    enumOptions.data = param
+    const res = await createRequest(enumOptions)
+    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].text : res
+    if (param.callback && typeof param.callback === 'function') {
+      param.callback(resData)
+    } else {
+      return resData
     }
   }
   // 自定义请求
   async createCustomRequest(url, options, callback) {
-    // 没传options
-    if (typeof options === 'function') {
-      callback = options
-    }
-    // 没传url
-    if (typeof url === 'object') {
-      options = url
-      url = options.url
-    }
-  
-    let params = {}
-    if (options !== null && typeof options === 'object') {
-      params = Object.assign(params, options, {url: url})
-    } else if (typeof url === 'string') {
-      params = Object.assign(params, {url: url})
+    const param = initParams(url, options, callback, 'url')
+    const option = getHttpOptions(param)
+    const res = await createRequest(option)
+    const resData = res && res.success ? res.data : res
+    if (param.callback && typeof param.callback === 'function') {
+      param.callback(resData)
     } else {
-      params = Object.assign({}, params, {url: url})
-    }
-    const option = getHttpOptions(params)
-    const reqData = await createRequest(option)
-    if (callback && typeof callback === 'function') {
-      callback(reqData)
-    } else {
-      return reqData
+      return resData
     }
   }
 }

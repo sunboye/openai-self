@@ -9,7 +9,10 @@ console.log('---------------正在执行测试程序-获取所有可用引擎-�
 // console.log(await openai.getModels())
 // await openai.getModels()
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res) })
-console.log(await openai.createNomalCompletions('你好'))
+// console.log(await openai.createNomalCompletions('你好'))
+// openai.createNomalCompletions('你好', (res) => {
+//   console.log(res)
+// })
 // console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: {
 //   "model": "text-davinci-003",
 //   "prompt": "Hello"
