@@ -24,8 +24,9 @@
 调用方法             |   封装接口       |       参数         |   说明
 :-------------------| :---------------| :-----------------| :--------------
 getModels           | /v1/models      | 无                | 获取openai所有可用模型信息
-createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 createNomalCompletions | /v1/completions | 1. msg: 类型-string，必填,对话消息；<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/>               | 与openai对话，默认模型为‘text-davinci-003’，默认最大token数为350
+createChatCompletions | /v1/chat/completions | 1. msg: 类型-string 或 array，必填,对话消息；数组类型格式参照官网<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/>               | 与openai对话，默认模型为‘gpt-3.5-turbo’，默认最大token数为350
+createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
 ### 例子
 
@@ -40,20 +41,6 @@ createNomalCompletions | /v1/completions | 1. msg: 类型-string，必填,对话
   console.log(await openai.getModels()) // 获取openai所用可用引擎
   
 ```
-- createCustomRequest()
-```javascript
-  // 第一种使用方法: 通过callback处理数据
-  openai.createCustomRequest('/v1/models', (res) => { console.log(res) })
-  // 第二种使用方法: async/await
-  console.log(await openai.createCustomRequest('/v1/models'))
-  // 第三种使用方法：传入config对象，具体参数参照axios的config参数
-  const params = {
-    model: "text-davinci-003",
-    prompt: "Hello"
-  }
-  console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: params}))
-```
-
 
 - createNomalCompletions()
 ```javascript
@@ -68,4 +55,18 @@ createNomalCompletions | /v1/completions | 1. msg: 类型-string，必填,对话
     max_tokens： 100
   }
   console.log(await openai.createNomalCompletions('你好', params))
+```
+
+- createCustomRequest()
+```javascript
+  // 第一种使用方法: 通过callback处理数据
+  openai.createCustomRequest('/v1/models', (res) => { console.log(res) })
+  // 第二种使用方法: async/await
+  console.log(await openai.createCustomRequest('/v1/models'))
+  // 第三种使用方法：传入config对象，具体参数参照axios的config参数
+  const params = {
+    model: "text-davinci-003",
+    prompt: "Hello"
+  }
+  console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: params}))
 ```

@@ -23,11 +23,20 @@ const initParams = (str, obj, func, key) => {
   // 没传obj
   if (typeof obj === 'function') {
     func = obj
+    obj = {}
   }
-  // 没传str
+  // 没传str或者str不为string类型
   if (typeof str === 'object') {
-    obj = str
-    str = obj[key]
+    if (Array.isArray(str)) {
+      // 适配/v1/chat/completions接口
+      if (!obj) {
+        obj = {}
+      }
+      obj[key] = str
+    } else {
+      obj = str
+      str = obj[key]
+    }
   }
 
   let params = {}
@@ -62,7 +71,6 @@ const getHttpOptions = (enumConf) => {
 }
 
 const createRequest = (config) => {
-  console.log(config)
   return new Promise((reslove, reject) => {
     $axios.request(config).then((res) =>{
       reslove(res)
@@ -121,6 +129,32 @@ class OpenAIInstance {
     enumOptions.data = param
     const res = await createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].text : res
+    if (param.callback && typeof param.callback === 'function') {
+      param.callback(resData)
+    } else {
+      return resData
+    }
+  }
+
+  async createChatCompletions(msg, options, callback) {
+    const param = initParams(msg, options, callback, 'messages')
+    if (param && param.messages) {
+      if (!Array.isArray(param.messages)) {
+        param.messages = [{role: 'user', content: param.messages}]
+      }
+      if (!param.model) {
+        param.model = 'gpt-3.5-turbo'
+      }
+      if (!param.max_tokens) {
+        param.max_tokens = 350
+      }
+    } else {
+      return new Error('param is not valid!!!')
+    }
+    const enumOptions = getHttpOptions(enumMap.interface.postChatCompletions)
+    enumOptions.data = param
+    const res = await createRequest(enumOptions)
+    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message.content : res
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
     } else {

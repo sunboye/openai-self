@@ -10,7 +10,7 @@ export default {
       method: 'post',
       url: '/v1/completions'
     },
-    postHighCompletions: {
+    postChatCompletions: {
       method: 'post',
       url: '/v1/chat/completions'
     },
