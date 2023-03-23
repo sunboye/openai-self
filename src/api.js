@@ -154,7 +154,7 @@ class OpenAIInstance {
     const enumOptions = getHttpOptions(enumMap.interface.postChatCompletions)
     enumOptions.data = param
     const res = await createRequest(enumOptions)
-    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message.content : res
+    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
     } else {
