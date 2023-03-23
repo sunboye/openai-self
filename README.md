@@ -50,11 +50,26 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
   console.log(await openai.createNomalCompletions('你好'))
   // 第三种使用方法：传入options，具体参数参考openai官网对该接口的支持
   const params = {
-    model: "text-davinci-003",
-    prompt: "Hello",
+    model: 'text-davinci-003',
+    prompt: 'Hello',
     max_tokens： 100
   }
   console.log(await openai.createNomalCompletions('你好', params))
+```
+
+- createChatCompletions()
+```javascript
+  // 第一种使用方法: 通过callback处理数据
+  openai.createChatCompletions('你好', (res) => {console.log(res)})
+  // 第二种使用方法: async/await
+  console.log(await openai.createChatCompletions('你好'))
+  // 第三种使用方法：传入options，具体参数参考openai官网对该接口的支持
+  const params = {
+    model: 'gpt-3.5-turbo',
+    // messages: [{role: "user", "content": "Hello!"}]
+    max_tokens： 100
+  }
+  console.log(await openai.createChatCompletions('你好', params))
 ```
 
 - createCustomRequest()
