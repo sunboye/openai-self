@@ -11,8 +11,8 @@
   const OpenAI = require('openai-self');
 
   const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, // openai的api_Key：必填，可前往openai官网申请
-    // proxyUri: '' // 代理服务器地址：非必填，科学上网时需要。格式：'protocol://agent-ip:port'
+    apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
+    // proxy: '', // 代理服务器地址：非必填，科学上网时需要。格式：'protocol://agent-ip:port'
     organizationId: '' // 组织机构Id：非必填
   });
   openai.getModels((res) => {console.log(res)}) // 获取openai所用可用引擎并打印到控制台
@@ -70,6 +70,18 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
     max_tokens： 100
   }
   console.log(await openai.createChatCompletions('你好', params))
+
+  // 关联上下文
+  const messages = [
+    {role: 'user', content: '请记住，我的名字叫毛蛋'}
+  ]
+  const resMsg = await openai.createChatCompletions(messages, {max_tokens: 500})
+  console.log(resMsg)
+  messages.push({role: 'assistant', content: resMsg})
+  messages.push({role: 'user', content: '请问我叫什么名字'})
+  console.dir(messages)
+  console.log(await openai.createChatCompletions(messages))
+
 ```
 
 - createCustomRequest()
