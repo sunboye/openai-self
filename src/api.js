@@ -1,7 +1,8 @@
-
-import enumMap from './enum.js'
+import fs from 'fs'
+import path from 'path'
 import httpsProxyAgent from 'https-proxy-agent'
 import $axios  from 'axios'
+import enumMap from './enum.js'
 import pkg from '../package.json' assert { type: "json" }
 
 
@@ -80,6 +81,39 @@ const createRequest = (config) => {
   })
 }
 
+const readContext = (param) => {
+  const keyword = param.context
+  try {
+    const defaultDir = path.resolve('./source_context')
+    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
+      fs.mkdirSync(defaultDir)
+    }
+    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      const buf = fs.readFileSync(filePath)
+      const json = JSON.parse(buf)
+      return Array.isArray(json) ? json.concat(param.messages) : param.messages
+    } else {
+      return param.messages
+    }
+  } catch (error) {
+    return param.messages
+  }
+}
+
+const saveContext = (keyword, data) => {
+  try {
+    const defaultDir = path.resolve('./source_context')
+    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
+      fs.mkdirSync(defaultDir)
+    }
+    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
+    fs.writeFileSync(filePath, JSON.stringify(data))
+  } catch (error) {
+    console.log(new Error('save Context failed !!!'))
+  }
+}
+
 class OpenAIInstance {
   constructor (configuration) {
     this.configuration = configuration || {}
@@ -138,6 +172,7 @@ class OpenAIInstance {
 
   async createChatCompletions(msg, options, callback) {
     const param = initParams(msg, options, callback, 'messages')
+    let context = ''
     if (param && param.messages) {
       if (!Array.isArray(param.messages)) {
         param.messages = [{role: 'user', content: param.messages}]
@@ -148,6 +183,12 @@ class OpenAIInstance {
       if (!param.max_tokens) {
         param.max_tokens = 350
       }
+      if (param.context) {
+        context = param.context
+        const msgArr = readContext(param)
+        param.messages = msgArr
+        delete param.context
+      }
     } else {
       return new Error('param is not valid!!!')
     }
@@ -155,11 +196,40 @@ class OpenAIInstance {
     enumOptions.data = param
     const res = await createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
+    if (context && resData && resData.content) {
+      param.messages.push(resData)
+      const writeContext = param.messages
+      saveContext(context, writeContext)
+    }
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
     } else {
       return resData
     }
+  }
+  async delectContext(keyword, evn) {
+    const defaultDir = path.resolve('./source_context')
+    let fileKey = []
+    if (keyword) {
+      fileKey = Array.isArray(keyword) ? keyword.map(k => k + '.json') || [] : [`${keyword}.json`]
+    } else {
+      fileKey = fs.readdirSync(defaultDir)
+    }
+    console.log(fileKey)
+    fileKey.forEach(f => {
+      try {
+        const filePath = path.resolve(`${defaultDir}/${f}`)
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          fs.unlinkSync(filePath)
+        } else {
+          console.log('context file is no exist!!!')
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    })
+
+    
   }
   // 自定义请求
   async createCustomRequest(url, options, callback) {

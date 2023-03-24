@@ -72,15 +72,16 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
   console.log(await openai.createChatCompletions('你好', params))
 
   // 关联上下文
-  const messages = [
-    {role: 'user', content: '请记住，我的名字叫毛蛋'}
-  ]
-  const resMsg = await openai.createChatCompletions(messages, {max_tokens: 500})
-  console.log(resMsg)
-  messages.push({role: 'assistant', content: resMsg})
-  messages.push({role: 'user', content: '请问我叫什么名字'})
-  console.dir(messages)
-  console.log(await openai.createChatCompletions(messages))
+  const chatParams = {
+    context: 'test-key', // 关联上下文参数，以此字段为文件名存放聊天数据
+    max_tokens: 500
+  }
+  // 需要删除聊天数据需主动调用delectContext
+  openai.delectContext(chatParams.context)
+
+  openai.createChatCompletions('你好', chatParams)
+  openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)
+  openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res.content)}) // ==> 您告诉过我您的名字是毛蛋。
 
 ```
 
