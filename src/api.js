@@ -207,7 +207,7 @@ class OpenAIInstance {
       return resData
     }
   }
-  async delectContext(keyword, evn) {
+  async deleteContext(keyword, evn) {
     const defaultDir = path.resolve('./source_context')
     let fileKey = []
     if (keyword) {
