@@ -3,8 +3,8 @@ import path from 'path'
 import httpsProxyAgent from 'https-proxy-agent'
 import $axios  from 'axios'
 import enumMap from './enum.js'
+import utils from './utils.js'
 import pkg from '../package.json' assert { type: "json" }
-
 
 // 添加响应拦截器
 $axios.interceptors.response.use(function (response) {
@@ -19,100 +19,6 @@ $axios.interceptors.response.use(function (response) {
   // 对响应错误做点什么
   return Promise.reject(new Error(error));
 });
-
-const initParams = (str, obj, func, key) => {
-  // 没传obj
-  if (typeof obj === 'function') {
-    func = obj
-    obj = {}
-  }
-  // 没传str或者str不为string类型
-  if (typeof str === 'object') {
-    if (Array.isArray(str)) {
-      // 适配/v1/chat/completions接口
-      if (!obj) {
-        obj = {}
-      }
-      obj[key] = str
-    } else {
-      obj = str
-      str = obj[key]
-    }
-  }
-
-  let params = {}
-  if (obj !== null && typeof obj === 'object') {
-    params = Object.assign(params, obj, {[key]: str})
-  } else if (typeof str === 'string') {
-    params = Object.assign(params, {[key]: str})
-  } else {
-    params = Object.assign({}, params, {[key]: str})
-  }
-  params.callback = func
-  return params
-}
-
-const getHttpOptions = (enumConf) => {
-  const baseOptions = Object.assign({}, enumConf)
-  if (enumConf &&  Object.keys(enumConf).length) {
-    baseOptions.method = enumConf.method || 'get'
-    if (enumConf.url.indexOf('http://') === 0 || enumConf.url.indexOf('https://') === 0) {
-      baseOptions.url = enumConf.url
-    } else {
-      baseOptions.url = `${enumConf.url.indexOf('/') === 0 ? '' : '/'}${enumConf.url}`
-    }
-    if (enumConf.headers) {
-      baseOptions.headers = Object.assign({}, enumConf.headers)
-    }
-  } else {
-    baseOptions.method = 'get'
-  }
-  return baseOptions
-
-}
-
-const createRequest = (config) => {
-  return new Promise((reslove, reject) => {
-    $axios.request(config).then((res) =>{
-      reslove(res)
-    }).catch(e => {
-      reslove(e)
-    })
-  })
-}
-
-const readContext = (param) => {
-  const keyword = param.context
-  try {
-    const defaultDir = path.resolve('./source_context')
-    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
-      fs.mkdirSync(defaultDir)
-    }
-    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      const buf = fs.readFileSync(filePath)
-      const json = JSON.parse(buf)
-      return Array.isArray(json) ? json.concat(param.messages) : param.messages
-    } else {
-      return param.messages
-    }
-  } catch (error) {
-    return param.messages
-  }
-}
-
-const saveContext = (keyword, data) => {
-  try {
-    const defaultDir = path.resolve('./source_context')
-    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
-      fs.mkdirSync(defaultDir)
-    }
-    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
-    fs.writeFileSync(filePath, JSON.stringify(data))
-  } catch (error) {
-    console.log(new Error('save Context failed !!!'))
-  }
-}
 
 class OpenAIInstance {
   constructor (configuration) {
@@ -138,8 +44,8 @@ class OpenAIInstance {
   }
   // 获取引擎列表
   async getModels(callback) {
-    const option = getHttpOptions(enumMap.interface.modelList)
-    const res = await createRequest(option)
+    const option = utils.getHttpOptions(enumMap.interface.modelList)
+    const res = await utils.createRequest(option)
     const resData = res && res.success && res.data ? res.data.data : res
     if (callback && typeof callback === 'function') {
       callback(resData)
@@ -148,7 +54,7 @@ class OpenAIInstance {
     }
   }
   async createNomalCompletions(msg, options, callback) {
-    const param = initParams(msg, options, callback, 'prompt')
+    const param = utils.initParams(msg, options, callback, 'prompt')
     if (param && param.prompt) {
       if (!param.model) {
         param.model = 'text-davinci-003'
@@ -159,9 +65,9 @@ class OpenAIInstance {
     } else {
       return new Error('param is not valid!!!')
     }
-    const enumOptions = getHttpOptions(enumMap.interface.postNomalCompletions)
+    const enumOptions = utils.getHttpOptions(enumMap.interface.postNomalCompletions)
     enumOptions.data = param
-    const res = await createRequest(enumOptions)
+    const res = await utils.createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].text : res
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
@@ -171,7 +77,7 @@ class OpenAIInstance {
   }
 
   async createChatCompletions(msg, options, callback) {
-    const param = initParams(msg, options, callback, 'messages')
+    const param = utils.initParams(msg, options, callback, 'messages')
     let context = ''
     if (param && param.messages) {
       if (!Array.isArray(param.messages)) {
@@ -185,21 +91,21 @@ class OpenAIInstance {
       }
       if (param.context) {
         context = param.context
-        const msgArr = readContext(param)
+        const msgArr = utils.readContext(param)
         param.messages = msgArr
         delete param.context
       }
     } else {
       return new Error('param is not valid!!!')
     }
-    const enumOptions = getHttpOptions(enumMap.interface.postChatCompletions)
+    const enumOptions = utils.getHttpOptions(enumMap.interface.postChatCompletions)
     enumOptions.data = param
-    const res = await createRequest(enumOptions)
+    const res = await utils.createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
     if (context && resData && resData.content) {
       param.messages.push(resData)
       const writeContext = param.messages
-      saveContext(context, writeContext)
+      utils.saveContext(context, writeContext)
     }
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
@@ -207,7 +113,7 @@ class OpenAIInstance {
       return resData
     }
   }
-  async deleteContext(keyword, evn) {
+  async clearContext(keyword, evn) {
     const defaultDir = path.resolve('./source_context')
     let fileKey = []
     if (keyword) {
@@ -233,9 +139,9 @@ class OpenAIInstance {
   }
   // 自定义请求
   async createCustomRequest(url, options, callback) {
-    const param = initParams(url, options, callback, 'url')
-    const option = getHttpOptions(param)
-    const res = await createRequest(option)
+    const param = utils.initParams(url, options, callback, 'url')
+    const option = utils.getHttpOptions(param)
+    const res = await utils.createRequest(option)
     const resData = res && res.success ? res.data : res
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
