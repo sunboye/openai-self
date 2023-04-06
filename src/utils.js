@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import $axios  from 'axios'
 import httpsProxyAgent from 'https-proxy-agent'
-import { BASE_PATH } from './enum.js'
+import { BASE_PATH, sourceSubDir } from './enum.js'
 import pkg from '../package.json' assert { type: "json" }
 
 // 添加响应拦截器
@@ -93,48 +93,141 @@ const createRequest = (config) => {
   })
 }
 
-const readContext = (param) => {
-  const keyword = param.context
+const createDir = (dir) => {
+  const pathDir = path.resolve(dir)
   try {
-    const defaultDir = path.resolve('./source_context')
-    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
-      fs.mkdirSync(defaultDir)
-    }
-    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      const buf = fs.readFileSync(filePath)
-      const json = JSON.parse(buf)
-      return Array.isArray(json) ? json.concat(param.messages) : param.messages
-    } else {
-      return param.messages
-    }
+    if (!fs.existsSync(pathDir)) {
+      fs.mkdirSync(pathDir)
+    } 
   } catch (error) {
-    return param.messages
-  }
-}
-
-const saveContext = (keyword, data) => {
-  try {
-    const defaultDir = path.resolve('./source_context')
-    if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
-      fs.mkdirSync(defaultDir)
-    }
-    const filePath = path.resolve(`${defaultDir}/${keyword}.json`)
-    fs.writeFileSync(filePath, JSON.stringify(data))
-  } catch (error) {
-    console.log(new Error('save Context failed !!!'))
+    console.log(error)
+    throw error
   }
 }
 
 const checkSourceDir = (config, dir) => {
-
+  const pathTemp = path.join(`${config.sourceDir}${path.sep}${dir}`)
+  if (!fs.existsSync(pathTemp)) {
+    const sep = path.sep
+    const pathArr = pathTemp.split(sep)
+    let curPath = ''
+    if (pathArr && pathArr.length) {
+      pathArr.forEach(item => {
+        curPath = curPath ? `${curPath}${sep}${item}` : item
+        createDir(curPath)
+      })
+    }
+    return fs.existsSync(path.resolve(pathTemp))
+  }
+  return true
 }
+
+const readContext = (config, param) => {
+  const keyword = param.context
+  if (checkSourceDir(config, sourceSubDir.context)) {
+    try {
+      const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+      if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
+        fs.mkdirSync(defaultDir)
+      }
+      const filePath = path.resolve(`${defaultDir}${path.sep}${keyword}.json`)
+      if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+        const buf = fs.readFileSync(filePath)
+        const json = JSON.parse(buf)
+        return Array.isArray(json) ? json.concat(param.messages) : param.messages
+      } else {
+        return param.messages
+      }
+    } catch (error) {
+      return param.messages
+    }   
+  } else {
+    throw(new Error('create context of sourceDir failed!!!'))
+  }
+}
+
+const saveContext = (config, keyword, data) => {
+  if (checkSourceDir(config, sourceSubDir.context)) {
+    try {
+      const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+      if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
+        fs.mkdirSync(defaultDir)
+      }
+      if (keyword && data) {
+        const filePath = path.resolve(`${defaultDir}${path.sep}${keyword}.json`)
+        fs.writeFileSync(filePath, JSON.stringify(data))
+      }
+    } catch (error) {
+      console.log(new Error('save Context failed !!!'))
+    }
+  } else {
+    throw(new Error('create context of sourceDir failed!!!'))
+  }
+}
+
+const clearContext = (config, keyword) => {
+  const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+  if (fs.existsSync(defaultDir)) {
+    let fileKeys = []
+    if (keyword) {
+      fileKeys = Array.isArray(keyword) ? keyword.map(k => k + '.json') || [] : [`${keyword}.json`]
+    } else {
+      fileKeys = fs.readdirSync(defaultDir)
+    }
+    fileKeys.forEach(f => {
+      try {
+        const filePath = path.resolve(`${defaultDir}${path.sep}${f}`)
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          fs.unlinkSync(filePath)
+        } else {
+          console.log('context file is no exist!!!')
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    })
+  }
+}
+
+const removeSourceDir = (dir) => {
+  if (fs.existsSync(path.resolve(dir))) {
+    const fileNames = fs.readdirSync(dir);
+    let childPath = null
+    fileNames.forEach(item => {
+      childPath = path.resolve(`${dir}${path.sep}${item}`)
+      if (fs.statSync(childPath).isDirectory()) {
+        removeSourceDir(childPath)
+        fs.rmdirSync(childPath)
+      } else {
+        fs.unlinkSync(childPath)
+      }
+    })
+  } else {
+    console.log(`path ${dir} is not exist`)
+  }
+}
+
+const clearSourceDir = (config, dir) => {
+  const rmDir = path.resolve(dir ? `${config.sourceDir}${path.sep}${dir}` : config.sourceDir)
+  console.log(rmDir)
+  if (fs.existsSync(rmDir)) {
+    if (fs.statSync(rmDir).isDirectory()) {
+      removeSourceDir(rmDir)
+    } else {
+      fs.unlinkSync(rmDir)
+    }
+  }
+}
+
 // 暴露方法
 export default {
   axiosDefault,
   initParams,
   getHttpOptions,
   createRequest,
+  checkSourceDir,
   readContext,
-  saveContext
+  saveContext,
+  clearContext,
+  clearSourceDir
 }

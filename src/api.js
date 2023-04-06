@@ -7,7 +7,7 @@ class OpenAIInstance {
     this.configuration.apiKey = configuration.apiKey || configuration.apikey
     if (this.configuration.apiKey) {
       utils.axiosDefault(this.configuration)
-      // this.configuration.sourceDir = this.configuration.sourceDir || 'openai-source'
+      this.configuration.sourceDir = this.configuration.sourceDir || 'openai-source'
     } else {
       const errMsg = 'apiKey is required of OpenAIInstance'
       const error = new Error(errMsg)
@@ -63,7 +63,7 @@ class OpenAIInstance {
       }
       if (param.context) {
         context = param.context
-        const msgArr = utils.readContext(param)
+        const msgArr = utils.readContext(this.configuration, param)
         param.messages = msgArr
         delete param.context
       }
@@ -76,8 +76,8 @@ class OpenAIInstance {
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
     if (context && resData && resData.content) {
       param.messages.push(resData)
-      const writeContext = param.messages
-      utils.saveContext(context, writeContext)
+      const writeContext = param.messages || ''
+      utils.saveContext(this.configuration, context, writeContext)
     }
     if (param.callback && typeof param.callback === 'function') {
       param.callback(resData)
@@ -85,27 +85,12 @@ class OpenAIInstance {
       return resData
     }
   }
-  // async clearContext(keyword, evn) {
-  //   const defaultDir = path.resolve('./source_context')
-  //   let fileKey = []
-  //   if (keyword) {
-  //     fileKey = Array.isArray(keyword) ? keyword.map(k => k + '.json') || [] : [`${keyword}.json`]
-  //   } else {
-  //     fileKey = fs.readdirSync(defaultDir)
-  //   }
-  //   fileKey.forEach(f => {
-  //     try {
-  //       const filePath = path.resolve(`${defaultDir}/${f}`)
-  //       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-  //         fs.unlinkSync(filePath)
-  //       } else {
-  //         console.log('context file is no exist!!!')
-  //       }
-  //     } catch (e) {
-  //       console.error(e)
-  //     }
-  //   })
-  // }
+  async clearContext(keyword) {
+    utils.clearContext(this.configuration, keyword)
+  }
+  async clearSourceDir(keyword) {
+    utils.clearSourceDir(this.configuration, keyword)
+  }
   // 自定义请求
   async createCustomRequest(url, options, callback) {
     const param = utils.initParams(url, options, callback, 'url')

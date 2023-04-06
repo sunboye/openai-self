@@ -1,8 +1,8 @@
 import openApi from './src/index.js'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
-  proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
-  sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
+  // proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
+  // sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
   organizationId: '' // 组织机构Id：非必填
 });
 console.log(openai)
@@ -22,8 +22,13 @@ console.log(await openai.getModels())
 //   context: 'test-key',
 //   max_tokens: 500
 // }
-// openai.deleteContext(chatParams.context)
-// await openai.createChatCompletions('你好', chatParams)
+// 清理sourceDir/context目录下文件
+// openai.clearContext(chatParams.context)
+
+// 清理souceDir目录文件
+// openai.clearSourceDir()
+
+// await openai.createChatCompletions('hello', chatParams)
 // await openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)
 // await openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res.content)})
 // openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})

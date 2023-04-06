@@ -39,9 +39,15 @@ const ImageSizeEnum = {
   _1024x1024: '1024x1024'
 }
 
+const sourceSubDir = {
+  context: 'context',
+  image: 'image',
+  video: 'video'
+}
 export {
   BASE_PATH,
   Interface,
   RoleEnum,
-  ImageSizeEnum
+  ImageSizeEnum,
+  sourceSubDir
 }

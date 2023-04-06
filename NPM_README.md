@@ -28,6 +28,11 @@ createNomalCompletions | /v1/completions | 1. msg: 类型-string，必填,对话
 createChatCompletions | /v1/chat/completions | 1. msg: 类型-string 或 array，必填,对话消息；数组类型格式参照官网<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/>               | 与openai对话，默认模型为‘gpt-3.5-turbo’，默认最大token数为350
 createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
+### 工具方法
+调用方法             |      参数                  |   说明
+:-------------------| :--------------------------| :--------------
+clearContext        | context: String类型，非必填 | 清除聊天产生的上下文文件，传参，删除固定context.json文件，不传参，则删除sourceDir/context文件下所有json文件
+clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的文件，传参，删除sourceDir/dir目录下的文件，不传参，则删除sourceDir目录下所有文件
 ### 例子
 
 > 使用commonJS规范导入模块时，推荐回调函数式写法，否则可能引起异常；
@@ -50,7 +55,7 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
   console.log(await openai.createNomalCompletions('你好'))
   // 第三种使用方法：传入options，具体参数参考openai官网对该接口的支持
   const params = {
-    model: 'text-davinci-003',
+    // model: 'text-davinci-003', //默认模型：text-davinci-003
     prompt: 'Hello',
     max_tokens： 100
   }
@@ -65,7 +70,7 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
   console.log(await openai.createChatCompletions('你好'))
   // 第三种使用方法：传入options，具体参数参考openai官网对该接口的支持
   const params = {
-    model: 'gpt-3.5-turbo',
+    // model: 'gpt-3.5-turbo', //默认模型：gpt-3.5-turbo
     // messages: [{role: "user", "content": "Hello!"}]
     max_tokens： 100
   }
@@ -77,7 +82,7 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
     max_tokens: 500
   }
   // 需要删除聊天数据需主动调用delectContext
-  openai.delectContext(chatParams.context)
+  openai.clearContext(chatParams.context)
 
   openai.createChatCompletions('你好', chatParams)
   openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)

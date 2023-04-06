@@ -1,6 +1,7 @@
 dist
 node_modules
 *-lock.json
+*-lock.yaml
 *.lock
 *_context
 openai_source
