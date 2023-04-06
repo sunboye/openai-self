@@ -1,3 +1,38 @@
+import fs from 'fs'
+import path from 'path'
+import $axios  from 'axios'
+import httpsProxyAgent from 'https-proxy-agent'
+import { BASE_PATH } from './enum.js'
+import pkg from '../package.json' assert { type: "json" }
+
+// 添加响应拦截器
+$axios.interceptors.response.use(function (response) {
+  // 对响应数据做点什么
+  return {
+    data: response.data,
+    status: response.status,
+    msg: response.statusText,
+    success: response.status === 200
+  };
+}, function (error) {
+  // 对响应错误做点什么
+  return Promise.reject(new Error(error));
+});
+
+const axiosDefault = (config) => {
+  $axios.defaults.baseURL = BASE_PATH
+  $axios.defaults.headers.common['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
+  $axios.defaults.headers.common['Authorization'] = `Bearer ${config.apiKey}`
+  if (config.organizationId) {
+    $axios.defaults.headers.common['OpenAI-Organization'] = config.organizationId
+  }
+  if (config.proxy) {
+    $axios.defaults.httpsAgent = new httpsProxyAgent(config.proxy).on('error', err => {
+      throw err
+    })
+  }
+}
+
 const initParams = (str, obj, func, key) => {
   // 没传obj
   if (typeof obj === 'function') {
@@ -90,19 +125,16 @@ const saveContext = (keyword, data) => {
     console.log(new Error('save Context failed !!!'))
   }
 }
-// const returnResData = (data, call) => {
-//   if (call && typeof call === 'function') {
-//     call(data)
-//   } else {
-//     return data
-//   }
-// }
+
+const checkSourceDir = (config, dir) => {
+
+}
 // 暴露方法
 export default {
+  axiosDefault,
   initParams,
   getHttpOptions,
   createRequest,
-  // returnResData,
   readContext,
   saveContext
 }

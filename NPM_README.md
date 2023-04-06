@@ -3,19 +3,20 @@
 ### 背景
   基于openai开放api封装，旨在可以更加简单的调用openai的api接口
 
+### 安装
+  `npm i openai-self`
+
 ### 开始
+```javascript
+  const OpenAI = require('openai-self');
 
-> 建议node版本大于16，低版本可能异常报错
-
-`npm install` 安装依赖
-`npm run test` 执行测试代码，运行test.js，运行前需要注意填写apiKey、proxy参数
-
-### 打包和发布
-
-`npm run build` 执行打包脚本
-打包成功后会得到这样一个提示
-> 打包完成，请进入dist目录，确认package.json文件信息，然后进行发布！
-
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
+    // proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要。格式：'protocol://agent-ip:port'
+    organizationId: '' // 组织机构Id：非必填
+  });
+  openai.getModels((res) => {console.log(res)}) // 获取openai所用可用引擎并打印到控制台
+```
 ### 接口说明
 
 [openai api文档官网入口](https://platform.openai.com/docs/api-reference)
