@@ -32,7 +32,7 @@ createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2.
 :-------------------| :--------------------------| :--------------
 clearContext        | context: String类型，非必填 | 清除聊天产生的上下文文件，传参，删除固定context.json文件，不传参，则删除sourceDir/context文件下所有json文件
 clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的文件，传参，删除sourceDir/dir目录下的文件，不传参，则删除sourceDir目录下所有文件
-### 例子
+### 示例
 
 > 使用commonJS规范导入模块时，推荐回调函数式写法，否则可能引起异常；
 > 使用ES6规范导入模块时, async/await 和 回调函数接收返回数据都可以；
