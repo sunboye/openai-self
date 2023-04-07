@@ -4,16 +4,16 @@ const Interface = {
     method: 'get',
     url: '/v1/models'
   },
-  postNomalCompletions: {
+  nomalCompletions: {
     method: 'post',
     url: '/v1/completions'
   },
-  postChatCompletions: {
+  chatCompletions: {
     method: 'post',
     url: '/v1/chat/completions'
   },
-  getImageByContent: {
-    method: 'get',
+  getCreateImage: {
+    method: 'post',
     url: '/v1/images/generations'
   },
   postEdit: {
@@ -34,11 +34,15 @@ const RoleEnum = {
 }
 
 const ImageSizeEnum = {
-  _256x256: '256x256',
-  _512x512: '512x512',
-  _1024x1024: '1024x1024'
+  _256: '256x256',
+  _512: '512x512',
+  _1024: '1024x1024'
 }
 
+const ResImageType = {
+  url: 'url',
+  b64: 'b64_json'
+}
 const sourceSubDir = {
   context: 'context',
   image: 'image',
@@ -49,5 +53,6 @@ export {
   Interface,
   RoleEnum,
   ImageSizeEnum,
+  ResImageType,
   sourceSubDir
 }

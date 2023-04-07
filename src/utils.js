@@ -5,6 +5,14 @@ import httpsProxyAgent from 'https-proxy-agent'
 import { BASE_PATH, sourceSubDir } from './enum.js'
 import pkg from '../package.json' assert { type: "json" }
 
+// $axios.interceptors.request.use(function (config) {
+//   // 在发送请求之前做些什么
+//   return config;
+// }, function (error) {
+//   // 对请求错误做些什么
+//   return Promise.reject(new Error(error));
+// });
+
 // 添加响应拦截器
 $axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
@@ -219,15 +227,41 @@ const clearSourceDir = (config, dir) => {
   }
 }
 
+const baseImageSave = (config, base) => {
+  if (checkSourceDir(config, sourceSubDir.image)) {
+    const baseArr = base
+    if (!Array.isArray(base)) {
+      baseArr = [base]
+    }
+    try {
+      const imagePath = []
+      baseArr.forEach(item => {
+        const binaryData = Buffer.from(item, 'base64');
+        const fileName = new Date().getTime() + '.png'
+        const filePath = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.image}`, fileName);
+        fs.writeFileSync(filePath, binaryData)
+        imagePath.push(filePath)
+      })
+      return imagePath
+    } catch (error) {
+      console.log(error)
+      console.log('save image Error, return response data')
+      return base
+    }
+  } else {
+    throw(new Error('create image of sourceDir failed!!!'))
+  }
+}
+
 // 暴露方法
 export default {
   axiosDefault,
   initParams,
   getHttpOptions,
   createRequest,
-  checkSourceDir,
   readContext,
   saveContext,
   clearContext,
-  clearSourceDir
+  clearSourceDir,
+  baseImageSave
 }

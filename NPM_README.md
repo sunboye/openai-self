@@ -27,6 +27,7 @@
 getModels           | /v1/models      | 无                | 获取openai所有可用模型信息
 createNomalCompletions | /v1/completions | 1. msg: 类型-string，必填,对话消息；<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/>               | 与openai对话，默认模型为‘text-davinci-003’，默认最大token数为350
 createChatCompletions | /v1/chat/completions | 1. msg: 类型-string 或 array，必填,对话消息；数组类型格式参照官网<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/>               | 与openai对话，默认模型为‘gpt-3.5-turbo’，默认最大token数为350
+generateImage         | /v1/images/generations | 1. msg: 类型-string 必填,生成图片要求描述；<br/>2. option：类型-object，非必填，具体参数参考openai官网对该接口的支持;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 根据描述生成图片
 createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
 ### 工具方法
@@ -79,7 +80,7 @@ clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的�
 
   // 关联上下文
   const chatParams = {
-    context: 'test-key', // 关联上下文参数，以此字段为文件名存放聊天数据
+    context: 'test-key', // 新增参数：关联上下文参数，以此字段为文件名存放聊天数据
     max_tokens: 500
   }
   // 需要删除聊天数据需主动调用delectContext
@@ -103,4 +104,15 @@ clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的�
     prompt: "Hello"
   }
   console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: params}))
+```
+
+- generateImage()
+```javascript
+  // 具体使用方法，参考以上几种示例 
+  const param = {
+    localSave: true // 新增参数：是否本地保存图片，开启之后，图片会保存到sourceDir/image目录下，并且方法返回保存地址
+  }
+  console.log(await openai.generateImage('A cute baby sea otter', param))
+  console.log(await openai.generateImage({prompt: 'A cute baby sea otter'}))
+  openai.generateImage('A cute baby sea otter', param, (res) => { console.log(res) })
 ```

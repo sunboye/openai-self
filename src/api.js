@@ -1,4 +1,4 @@
-import { Interface } from './enum.js'
+import { Interface, ImageSizeEnum, ResImageType } from './enum.js'
 import utils from './utils.js'
 
 class OpenAIInstance {
@@ -37,7 +37,7 @@ class OpenAIInstance {
     } else {
       return new Error('param is not valid!!!')
     }
-    const enumOptions = utils.getHttpOptions(Interface.postNomalCompletions)
+    const enumOptions = utils.getHttpOptions(Interface.nomalCompletions)
     enumOptions.data = param
     const res = await utils.createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].text : res
@@ -68,9 +68,9 @@ class OpenAIInstance {
         delete param.context
       }
     } else {
-      return new Error('param is not valid!!!')
+      return new Error('param messages is not valid!!!')
     }
-    const enumOptions = utils.getHttpOptions(Interface.postChatCompletions)
+    const enumOptions = utils.getHttpOptions(Interface.chatCompletions)
     enumOptions.data = param
     const res = await utils.createRequest(enumOptions)
     const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
@@ -83,6 +83,48 @@ class OpenAIInstance {
       param.callback(resData)
     } else {
       return resData
+    }
+  }
+  async generateImage(msg, options, callback) {
+    const param = utils.initParams(msg, options, callback, 'prompt')
+    if (param && param.prompt) {
+      let isSave = false
+      if (!param.n) {
+        param.n = 1
+      }
+      if (!param.size) {
+        param.size = ImageSizeEnum._512
+      }
+      if (Object.keys(param).includes('localSave')) {
+        isSave = param.localSave
+        delete param.localSave
+      }
+      if (isSave) {
+        param.response_format = ResImageType.b64
+      }
+      const enumOptions = utils.getHttpOptions(Interface.getCreateImage)
+      enumOptions.data = param
+      const res = await utils.createRequest(enumOptions)
+      const dataTemp = res && res.success && res.data && res.data.data.length ? res.data.data : res
+      let resData = []
+      if (res.success && res.data && res.data.data.length) {
+        if (param.response_format === ResImageType.b64) {
+          const bases = dataTemp.map(item => item[ResImageType.b64]) || []
+          resData = isSave ? utils.baseImageSave(this.configuration, bases) : bases
+        } else {
+          const imageUrls = dataTemp.map(item => item[ResImageType.url]) || []
+          resData = imageUrls
+        }
+      } else {
+        resData = dataTemp
+      }
+      if (param.callback && typeof param.callback === 'function') {
+        param.callback(resData)
+      } else {
+        return resData
+      }
+    } else {
+      return new Error('param prompt is not valid!!!')
     }
   }
   async clearContext(keyword) {

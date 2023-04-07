@@ -1,14 +1,15 @@
 import openApi from './src/index.js'
 const openai = new openApi({
-  apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
-  // proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
-  // sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
+  apiKey: process.env.OPENAI_API_KEY || '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', // openai的api_Key：必填，可前往openai官网申请
+  proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
+  sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
   organizationId: '' // 组织机构Id：非必填
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
 console.log(await openai.getModels())
-// await openai.getModels()
+
+
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res.data ? res.data.map(i => i.id) : res) })
 
 // console.log(await openai.createNomalCompletions('你好', {max_tokens: 400}))
@@ -37,3 +38,12 @@ console.log(await openai.getModels())
 //   "model": "text-davinci-003",
 //   "prompt": "Hello"
 // }}))
+
+// const param = {
+//   localSave: true
+// }
+// openai.generateImage('A cute baby sea otter', param, (res) => { console.log(res) })
+// console.log(await openai.generateImage('A cute baby sea otter', param))
+
+// 清理souceDir/image目录文件
+// openai.clearSourceDir('image')
