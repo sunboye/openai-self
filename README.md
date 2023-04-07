@@ -8,6 +8,7 @@
 > 建议node版本大于16，低版本可能异常报错
 
 `npm install` 安装依赖
+
 `npm run test` 执行测试代码，运行test.js，运行前需要注意填写apiKey、proxy参数
 
 ### 打包和发布
