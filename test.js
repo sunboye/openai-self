@@ -1,7 +1,15 @@
+/*
+ * @Author: yangss
+ * @Position: 
+ * @Date: 2023-03-24 16:55:45
+ * @LastEditors: yangss
+ * @LastEditTime: 2023-04-12 21:32:45
+ * @FilePath: \openai-self\test.js
+ */
 import openApi from './src/index.js'
 const openai = new openApi({
-  apiKey: process.env.OPENAI_API_KEY || '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', // openai的api_Key：必填，可前往openai官网申请
-  proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
+  apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
+  // proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
   sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
   organizationId: '' // 组织机构Id：非必填
 });
@@ -42,7 +50,7 @@ console.log(await openai.getModels())
 // const param = {
 //   localSave: true
 // }
-// openai.generateImage('A cute baby sea otter', param, (res) => { console.log(res) })
+// openai.generateImage('日本女优', (res) => { console.log(res) })
 // console.log(await openai.generateImage('A cute baby sea otter', param))
 
 // 清理souceDir/image目录文件

@@ -19,12 +19,22 @@ $axios.interceptors.response.use(function (response) {
   return {
     data: response.data,
     status: response.status,
-    msg: response.statusText,
+    message: response.statusText,
     success: response.status === 200
   };
 }, function (error) {
   // 对响应错误做点什么
-  return Promise.reject(new Error(error));
+  if (error.response && error.response.data) {
+    const errData = error.response.data
+    return {
+      ...errData.error,
+      msg: error.response.statusText,
+      status: error.response.status,
+      success: error.response.status === 200
+    }
+  } else {
+    return error.cause ? error.cause : error
+  }
 });
 
 const axiosDefault = (config) => {
