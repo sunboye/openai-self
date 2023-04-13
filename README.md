@@ -79,7 +79,7 @@ clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的�
 
   // 关联上下文
   const chatParams = {
-    context: 'test-key', // 关联上下文参数，以此字段为文件名存放聊天数据
+    context: 'test-key', // 新增参数：关联上下文参数，以此字段为文件名存放聊天数据；注意：如果传入n参数，n>1时，context参数不再生效，也不再具有关联上下文功能
     max_tokens: 500
   }
   // 需要删除聊天数据需主动调用delectContext
@@ -109,7 +109,7 @@ clearSourceDir      | dir: String类型，非必填     | 清除聊天产生的�
 ```javascript
   // 具体使用方法，参考以上几种示例 
   const param = {
-    localSave: true // 是否本地保存图片，开启之后，图片会保存到sourceDir/image目录下
+    local: true // 是否本地保存图片，开启之后，图片会保存到sourceDir/image目录下，并且返回本地保存地址
   }
   console.log(await openai.generateImage('A cute baby sea otter', param))
   openai.generateImage('A cute baby sea otter', param, (res) => { console.log(res) })

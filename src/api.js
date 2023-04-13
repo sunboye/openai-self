@@ -7,7 +7,7 @@ class OpenAIInstance {
     this.configuration.apiKey = configuration.apiKey || configuration.apikey
     if (this.configuration.apiKey) {
       utils.axiosDefault(this.configuration)
-      this.configuration.sourceDir = this.configuration.sourceDir || 'openai-source'
+      this.configuration.sourceDir = this.configuration.sourceDir || 'openai_source'
     } else {
       const errMsg = 'apiKey is required of OpenAIInstance'
       const error = new Error(errMsg)
@@ -18,11 +18,10 @@ class OpenAIInstance {
   async getModels(callback) {
     const option = utils.getHttpOptions(Interface.modelList)
     const res = await utils.createRequest(option)
-    const resData = res && res.success && res.data ? res.data.data : res
     if (callback && typeof callback === 'function') {
-      callback(resData)
+      callback(res)
     } else {
-      return resData
+      return res
     }
   }
   async createNomalCompletions(msg, options, callback) {
@@ -40,11 +39,10 @@ class OpenAIInstance {
     const enumOptions = utils.getHttpOptions(Interface.nomalCompletions)
     enumOptions.data = param
     const res = await utils.createRequest(enumOptions)
-    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].text : res
     if (param.callback && typeof param.callback === 'function') {
-      param.callback(resData)
+      param.callback(res)
     } else {
-      return resData
+      return res
     }
   }
 
@@ -61,11 +59,15 @@ class OpenAIInstance {
       if (!param.max_tokens) {
         param.max_tokens = 350
       }
-      if (param.context) {
-        context = param.context
-        const msgArr = utils.readContext(this.configuration, param)
-        param.messages = msgArr
-        delete param.context
+
+      if (!param.n || param.n < 2) {
+        if (param.context) {
+          console.warn('The context parameter is not effective because n>1')
+          context = param.context
+          const msgArr = utils.readContext(this.configuration, param)
+          param.messages = msgArr
+          delete param.context
+        }
       }
     } else {
       return new Error('param messages is not valid!!!')
@@ -73,16 +75,19 @@ class OpenAIInstance {
     const enumOptions = utils.getHttpOptions(Interface.chatCompletions)
     enumOptions.data = param
     const res = await utils.createRequest(enumOptions)
-    const resData = res && res.success && res.data && res.data.choices ? res.data.choices[0].message : res
-    if (context && resData && resData.content) {
-      param.messages.push(resData)
-      const writeContext = param.messages || ''
-      utils.saveContext(this.configuration, context, writeContext)
+    const resData = res && res.success && res.choices && res.choices.length ? res.choices[0].message : res
+    if (context) {
+      res.tips = 'If you want to generate multiple chats, please pass in the parameter n. When n>1, the associated context function is no longer supported. You need to handle the associated context yourself!!!'
+      if (resData && resData.content) {
+        param.messages.push(resData)
+        const writeContext = param.messages || ''
+        utils.saveContext(this.configuration, context, writeContext)
+      }
     }
     if (param.callback && typeof param.callback === 'function') {
-      param.callback(resData)
+      param.callback(res)
     } else {
-      return resData
+      return res
     }
   }
   async generateImage(msg, options, callback) {
@@ -95,9 +100,9 @@ class OpenAIInstance {
       if (!param.size) {
         param.size = ImageSizeEnum._512
       }
-      if (Object.keys(param).includes('localSave')) {
-        isSave = param.localSave
-        delete param.localSave
+      if (Object.keys(param).includes('local')) {
+        isSave = param.local
+        delete param.local
       }
       if (isSave) {
         param.response_format = ResImageType.b64
@@ -105,23 +110,18 @@ class OpenAIInstance {
       const enumOptions = utils.getHttpOptions(Interface.getCreateImage)
       enumOptions.data = param
       const res = await utils.createRequest(enumOptions)
-      const dataTemp = res && res.success && res.data && res.data.data.length ? res.data.data : res
-      let resData = []
-      if (res.success && res.data && res.data.data.length) {
-        if (param.response_format === ResImageType.b64) {
-          const bases = dataTemp.map(item => item[ResImageType.b64]) || []
-          resData = isSave ? utils.baseImageSave(this.configuration, bases) : bases
-        } else {
-          const imageUrls = dataTemp.map(item => item[ResImageType.url]) || []
-          resData = imageUrls
+      res.type = param.response_format || ResImageType.url
+      if (isSave) {
+        if (res.success && res.data && res.data.length) {
+          const dataTemp = res.data
+          res.data = utils.baseImageSave(this.configuration, dataTemp)
+          res.type = res.data && res.data.length && res.data[0].local_path ? 'local_path' : param.response_format || ResImageType.url
         }
-      } else {
-        resData = dataTemp
       }
       if (param.callback && typeof param.callback === 'function') {
-        param.callback(resData)
+        param.callback(res)
       } else {
-        return resData
+        return res
       }
     } else {
       return new Error('param prompt is not valid!!!')
@@ -138,11 +138,10 @@ class OpenAIInstance {
     const param = utils.initParams(url, options, callback, 'url')
     const option = utils.getHttpOptions(param)
     const res = await utils.createRequest(option)
-    const resData = res && res.success ? res.data : res
     if (param.callback && typeof param.callback === 'function') {
-      param.callback(resData)
+      param.callback(res)
     } else {
-      return resData
+      return res
     }
   }
 }

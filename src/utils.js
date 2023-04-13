@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import $axios  from 'axios'
 import httpsProxyAgent from 'https-proxy-agent'
-import { BASE_PATH, sourceSubDir } from './enum.js'
+import { BASE_PATH, sourceSubDir, ResImageType } from './enum.js'
 import pkg from '../package.json' assert { type: "json" }
 
 // $axios.interceptors.request.use(function (config) {
@@ -17,7 +17,7 @@ import pkg from '../package.json' assert { type: "json" }
 $axios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   return {
-    data: response.data,
+    ...response.data,
     status: response.status,
     message: response.statusText,
     success: response.status === 200
@@ -28,12 +28,17 @@ $axios.interceptors.response.use(function (response) {
     const errData = error.response.data
     return {
       ...errData.error,
-      msg: error.response.statusText,
       status: error.response.status,
       success: error.response.status === 200
     }
   } else {
-    return error.cause ? error.cause : error
+    return {
+      code: error.code,
+      message: error.message,
+      status: 400,
+      cause: error.cause,
+      success: false
+    }
   }
 });
 
@@ -239,10 +244,7 @@ const clearSourceDir = (config, dir) => {
 
 const baseImageSave = (config, base) => {
   if (checkSourceDir(config, sourceSubDir.image)) {
-    const baseArr = base
-    if (!Array.isArray(base)) {
-      baseArr = [base]
-    }
+    const baseArr = base.length ? base.map(item => item[ResImageType.b64]) || [] : []
     try {
       const imagePath = []
       baseArr.forEach(item => {
@@ -250,7 +252,7 @@ const baseImageSave = (config, base) => {
         const fileName = new Date().getTime() + '.png'
         const filePath = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.image}`, fileName);
         fs.writeFileSync(filePath, binaryData)
-        imagePath.push(filePath)
+        imagePath.push({local_path: filePath})
       })
       return imagePath
     } catch (error) {

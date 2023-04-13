@@ -1,6 +1,6 @@
 {
   "name": "openai-self",
-  "version": "1.0.27",
+  "version": "1.1.0",
   "description": "封装openai的api,旨在可以更加简单的调用openai的开放api",
   "author": "yangss",
   "scripts": {

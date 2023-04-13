@@ -3,7 +3,7 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-12 21:32:45
+ * @LastEditTime: 2023-04-13 13:18:41
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
@@ -37,7 +37,7 @@ console.log(await openai.getModels())
 // 清理souceDir目录文件
 // openai.clearSourceDir()
 
-// await openai.createChatCompletions('hello', chatParams)
+// console.dir(await openai.createChatCompletions('hello', chatParams))
 // await openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)
 // await openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res.content)})
 // openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})
@@ -48,9 +48,9 @@ console.log(await openai.getModels())
 // }}))
 
 // const param = {
-//   localSave: true
+//   local: true
 // }
-// openai.generateImage('日本女优', (res) => { console.log(res) })
+// openai.generateImage('baby', (res) => { console.log(res) })
 // console.log(await openai.generateImage('A cute baby sea otter', param))
 
 // 清理souceDir/image目录文件
