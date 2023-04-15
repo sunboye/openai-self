@@ -59,16 +59,16 @@ class OpenAIInstance {
       if (!param.max_tokens) {
         param.max_tokens = 350
       }
-
-      if (!param.n || param.n < 2) {
-        if (param.context) {
+      if (param.context) {
+        if (param.n && param.n > 1) {
           console.warn('The context parameter is not effective because n>1')
+        } else {
           context = param.context
           const msgArr = utils.readContext(this.configuration, param)
           param.messages = msgArr
-          delete param.context
         }
       }
+      Object.keys(param).includes('context') && delete param.context
     } else {
       return new Error('param messages is not valid!!!')
     }

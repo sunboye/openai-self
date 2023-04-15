@@ -3,7 +3,7 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-13 13:18:41
+ * @LastEditTime: 2023-04-15 22:48:47
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
@@ -17,6 +17,7 @@ console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
 console.log(await openai.getModels())
 
+openai.getModels((res) => {console.log(res)})
 
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res.data ? res.data.map(i => i.id) : res) })
 
