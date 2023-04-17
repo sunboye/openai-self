@@ -127,10 +127,16 @@ class OpenAIInstance {
       return new Error('param prompt is not valid!!!')
     }
   }
-  async clearContext(keyword) {
+  getSourceDir() {
+    return utils.getSourceDir()
+  }
+  createInSourceDir(dir) {
+    return dir ? utils.createInSourceDir(this.configuration, dir) : false
+  }
+  clearContext(keyword) {
     utils.clearContext(this.configuration, keyword)
   }
-  async clearSourceDir(keyword) {
+  clearSourceDir(keyword) {
     utils.clearSourceDir(this.configuration, keyword)
   }
   // 自定义请求

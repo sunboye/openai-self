@@ -46,6 +46,7 @@ const ResImageType = {
 const sourceSubDir = {
   context: 'context',
   image: 'image',
+  audio: 'audio',
   video: 'video'
 }
 export {

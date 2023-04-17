@@ -117,7 +117,7 @@ const createRequest = (config) => {
 }
 
 const createDir = (dir) => {
-  const pathDir = path.resolve(dir)
+  const pathDir = path.join(dir)
   try {
     if (!fs.existsSync(pathDir)) {
       fs.mkdirSync(pathDir)
@@ -129,31 +129,34 @@ const createDir = (dir) => {
 }
 
 const checkSourceDir = (config, dir) => {
-  const pathTemp = path.join(`${config.sourceDir}${path.sep}${dir}`)
+  const pathTemp = path.join(config.sourceDir, dir || '')
+  console.dir(pathTemp)
   if (!fs.existsSync(pathTemp)) {
     const sep = path.sep
     const pathArr = pathTemp.split(sep)
     let curPath = ''
     if (pathArr && pathArr.length) {
       pathArr.forEach(item => {
-        curPath = curPath ? `${curPath}${sep}${item}` : item
+        curPath = curPath ? path.join(curPath, item) : item
         createDir(curPath)
       })
     }
-    return fs.existsSync(path.resolve(pathTemp))
+    return fs.existsSync(path.join(pathTemp))
   }
   return true
 }
-
+const getSourceDir = (config) => {
+  return path.join(config.sourceDir)
+}
 const readContext = (config, param) => {
   const keyword = param.context
   if (checkSourceDir(config, sourceSubDir.context)) {
     try {
-      const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+      const defaultDir = path.join(config.sourceDir, sourceSubDir.context)
       if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
         fs.mkdirSync(defaultDir)
       }
-      const filePath = path.resolve(`${defaultDir}${path.sep}${keyword}.json`)
+      const filePath = path.join(defaultDir, `${keyword}.json`)
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
         const buf = fs.readFileSync(filePath)
         const json = JSON.parse(buf)
@@ -172,12 +175,12 @@ const readContext = (config, param) => {
 const saveContext = (config, keyword, data) => {
   if (checkSourceDir(config, sourceSubDir.context)) {
     try {
-      const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+      const defaultDir = path.join(config.sourceDir, sourceSubDir.context)
       if (!fs.existsSync(defaultDir) || !fs.statSync(defaultDir).isDirectory()) {
         fs.mkdirSync(defaultDir)
       }
       if (keyword && data) {
-        const filePath = path.resolve(`${defaultDir}${path.sep}${keyword}.json`)
+        const filePath = path.join(defaultDir, `${keyword}.json`)
         fs.writeFileSync(filePath, JSON.stringify(data))
       }
     } catch (error) {
@@ -189,7 +192,7 @@ const saveContext = (config, keyword, data) => {
 }
 
 const clearContext = (config, keyword) => {
-  const defaultDir = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.context}`)
+  const defaultDir = path.join(config.sourceDir, sourceSubDir.context)
   if (fs.existsSync(defaultDir)) {
     let fileKeys = []
     if (keyword) {
@@ -199,7 +202,7 @@ const clearContext = (config, keyword) => {
     }
     fileKeys.forEach(f => {
       try {
-        const filePath = path.resolve(`${defaultDir}${path.sep}${f}`)
+        const filePath = path.join(defaultDir, f)
         if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
           fs.unlinkSync(filePath)
         } else {
@@ -213,11 +216,11 @@ const clearContext = (config, keyword) => {
 }
 
 const removeSourceDir = (dir) => {
-  if (fs.existsSync(path.resolve(dir))) {
+  if (fs.existsSync(path.join(dir))) {
     const fileNames = fs.readdirSync(dir);
     let childPath = null
     fileNames.forEach(item => {
-      childPath = path.resolve(`${dir}${path.sep}${item}`)
+      childPath = path.join(dir, item)
       if (fs.statSync(childPath).isDirectory()) {
         removeSourceDir(childPath)
         fs.rmdirSync(childPath)
@@ -231,7 +234,7 @@ const removeSourceDir = (dir) => {
 }
 
 const clearSourceDir = (config, dir) => {
-  const rmDir = path.resolve(dir ? `${config.sourceDir}${path.sep}${dir}` : config.sourceDir)
+  const rmDir = dir ? path.join(config.sourceDir, dir) : path.join(config.sourceDir)
   console.log(rmDir)
   if (fs.existsSync(rmDir)) {
     if (fs.statSync(rmDir).isDirectory()) {
@@ -250,7 +253,7 @@ const baseImageSave = (config, base) => {
       baseArr.forEach(item => {
         const binaryData = Buffer.from(item, 'base64');
         const fileName = new Date().getTime() + '.png'
-        const filePath = path.resolve(`${config.sourceDir}${path.sep}${sourceSubDir.image}`, fileName);
+        const filePath = path.resolve(config.sourceDir, sourceSubDir.image, fileName);
         fs.writeFileSync(filePath, binaryData)
         imagePath.push({local_path: filePath})
       })
@@ -271,6 +274,8 @@ export default {
   initParams,
   getHttpOptions,
   createRequest,
+  createInSourceDir: checkSourceDir,
+  getSourceDir,
   readContext,
   saveContext,
   clearContext,

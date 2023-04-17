@@ -3,13 +3,13 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-15 22:48:47
+ * @LastEditTime: 2023-04-17 18:04:37
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
-  // proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
+  proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
   sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
   organizationId: '' // 组织机构Id：非必填
 });
@@ -17,7 +17,7 @@ console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
 console.log(await openai.getModels())
 
-openai.getModels((res) => {console.log(res)})
+// openai.getModels((res) => {console.log(res)})
 
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res.data ? res.data.map(i => i.id) : res) })
 
@@ -56,3 +56,6 @@ openai.getModels((res) => {console.log(res)})
 
 // 清理souceDir/image目录文件
 // openai.clearSourceDir('image')
+
+
+// openai.createInSourceDir('aaaa')
