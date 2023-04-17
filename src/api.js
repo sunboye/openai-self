@@ -7,7 +7,7 @@ class OpenAIInstance {
     this.configuration.apiKey = configuration.apiKey || configuration.apikey
     if (this.configuration.apiKey) {
       utils.axiosDefault(this.configuration)
-      this.configuration.sourceDir = this.configuration.sourceDir || 'openai_source'
+      this.configuration.sourceDir = this.configuration.sourceDir || 'openai_cache'
     } else {
       const errMsg = 'apiKey is required of OpenAIInstance'
       const error = new Error(errMsg)

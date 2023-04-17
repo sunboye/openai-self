@@ -10,7 +10,7 @@ import openApi from './src/index.js'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
   // proxy: 'http://127.0.0.1:19180', // 代理服务器地址：非必填，科学上网时需要
-  // sourceDir: '', // 内容缓存地址：非必填，默认值为./openai_source
+  // sourceDir: '', // 内容缓存地址：非必填，默认值为./openai_cache
   // organizationId: '' // 组织机构Id：非必填
 });
 console.log(openai)
