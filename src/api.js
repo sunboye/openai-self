@@ -128,7 +128,7 @@ class OpenAIInstance {
     }
   }
   getSourceDir() {
-    return utils.getSourceDir()
+    return utils.getSourceDir(this.configuration)
   }
   createInSourceDir(dir) {
     return dir ? utils.createInSourceDir(this.configuration, dir) : false

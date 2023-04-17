@@ -9,9 +9,9 @@
 import openApi from './src/index.js'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
-  proxy: 'http://127.0.0.1:21882', // 代理服务器地址：非必填，科学上网时需要
-  sourceDir: 'openai_source', // 内容缓存地址：非必填，默认值为./openai_source
-  organizationId: '' // 组织机构Id：非必填
+  // proxy: 'http://127.0.0.1:19180', // 代理服务器地址：非必填，科学上网时需要
+  // sourceDir: '', // 内容缓存地址：非必填，默认值为./openai_source
+  // organizationId: '' // 组织机构Id：非必填
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
@@ -40,7 +40,7 @@ console.log(await openai.getModels())
 
 // console.dir(await openai.createChatCompletions('hello', chatParams))
 // await openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)
-// await openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res.content)})
+// await openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})
 // openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})
 
 // console.log(await openai.createCustomRequest({method: 'post', url: '/v1/completions', data: {
@@ -57,5 +57,5 @@ console.log(await openai.getModels())
 // 清理souceDir/image目录文件
 // openai.clearSourceDir('image')
 
-
+// console.log(openai.getSourceDir())
 // openai.createInSourceDir('aaaa')

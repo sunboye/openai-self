@@ -130,7 +130,6 @@ const createDir = (dir) => {
 
 const checkSourceDir = (config, dir) => {
   const pathTemp = path.join(config.sourceDir, dir || '')
-  console.dir(pathTemp)
   if (!fs.existsSync(pathTemp)) {
     const sep = path.sep
     const pathArr = pathTemp.split(sep)
