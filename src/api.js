@@ -115,7 +115,7 @@ class OpenAIInstance {
         if (res.success && res.data && res.data.length) {
           const dataTemp = res.data
           res.data = utils.baseImageSave(this.configuration, dataTemp)
-          res.type = res.data && res.data.length && res.data[0].local_path ? 'local_path' : param.response_format || ResImageType.url
+          res.type = res.data && res.data.length && res.data[0][ResImageType.local] ? ResImageType.local : param.response_format || ResImageType.url
         }
       }
       if (param.callback && typeof param.callback === 'function') {
@@ -127,7 +127,32 @@ class OpenAIInstance {
       return new Error('param prompt is not valid!!!')
     }
   }
-  
+
+  async createTranscription(file, options, callback) {
+    const param= utils.initParams(file, options, callback, 'file')
+    if (param && param.file) {
+      if (!param.model) {
+        param.model = 'whisper-1'
+      }
+      // createTranscription 特殊处理，待优化
+      let callback = null
+      if (param.callback && typeof param.callback=== 'function') {
+        callback = param.callback
+        delete param.callback
+      }
+      param.file = utils.getFileStream(param.file)
+      const enumOptions = utils.getHttpOptions(Interface.createTranscription)
+      enumOptions.data = param
+      const res = await utils.createRequest(enumOptions)
+      if (callback && typeof callback=== 'function') {
+        callback(res)
+      } else {
+        return res
+      }
+    } else {
+      return new Error('param file is not valid!!!')
+    }
+  }
   getSourceDir() {
     return utils.getSourceDir(this.configuration)
   }

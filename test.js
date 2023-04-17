@@ -59,3 +59,8 @@ console.log(await openai.getModels())
 
 // console.log(openai.getSourceDir())
 // openai.createInSourceDir('aaaa')
+
+// openai.createTranscription('./openai_source/audio/Nomeolvides.mp3', (res) => { console.dir(res) })
+// console.log(await openai.createTranscription('./openai_source/audio/Nomeolvides.mp3'))
+
+// console.log(await openai.generateImage('A cute baby sea otter', param))

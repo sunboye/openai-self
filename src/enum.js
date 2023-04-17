@@ -16,6 +16,13 @@ const Interface = {
     method: 'post',
     url: '/v1/images/generations'
   },
+  createTranscription: {
+    method: 'post',
+    url: '/v1/audio/transcriptions',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  },
   postEdit: {
     method: 'post',
     url: '/v1/edits'
@@ -41,7 +48,8 @@ const ImageSizeEnum = {
 
 const ResImageType = {
   url: 'url',
-  b64: 'b64_json'
+  b64: 'b64_json',
+  local:  'local_path',
 }
 const sourceSubDir = {
   context: 'context',

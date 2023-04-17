@@ -267,6 +267,24 @@ const baseImageSave = (config, base) => {
   }
 }
 
+const isStream = (stream) => {
+  return stream !== null &&
+  typeof stream === "object" &&
+  typeof stream.pipe === "function"
+}
+  
+const getFileStream = (value) => {
+  if (isStream(value)) {
+    return value
+  } else {
+    const filePath =  path.resolve(value)
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile) {
+      return fs.createReadStream(filePath)
+    } else {
+      return null
+    }
+  }
+}
 // 暴露方法
 export default {
   axiosDefault,
@@ -279,5 +297,6 @@ export default {
   saveContext,
   clearContext,
   clearSourceDir,
-  baseImageSave
+  baseImageSave,
+  getFileStream
 }
