@@ -127,6 +127,7 @@ class OpenAIInstance {
       return new Error('param prompt is not valid!!!')
     }
   }
+  
   getSourceDir() {
     return utils.getSourceDir(this.configuration)
   }
