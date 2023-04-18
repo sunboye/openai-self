@@ -119,3 +119,13 @@ clearSourceDir      | dir: String类型，非必填     | 无 | 清除聊天产�
   console.log(await openai.generateImage({prompt: 'A cute baby sea otter'}))
   openai.generateImage('A cute baby sea otter', param, (res) => { console.log(res) })
 ```
+
+- createTranscription()
+```javascript
+  // 具体使用方法，参考以上几种示例 
+  const param = {
+    file: './openai_source/audio/Nomeolvides.mp3' // 本地音频资源地址或者直接传stream流
+  }
+  console.log(await openai.createTranscription(param))
+  openai.createTranscription('./openai_source/audio/Nomeolvides.mp3', (res) => { console.dir(res) })
+```
