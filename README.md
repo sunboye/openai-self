@@ -63,7 +63,7 @@ clearSourceDir      | dir: String类型，非必填     | 无 | 清除聊天产�
     prompt: 'Hello',
     max_tokens： 100
   }
-  console.log(await openai.createNomalCompletions('你好', params))
+  console.log(await openai.createNomalCompletions(params))
 ```
 
 - createChatCompletions()
