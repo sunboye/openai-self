@@ -3,7 +3,7 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-17 18:04:37
+ * @LastEditTime: 2023-04-19 17:48:05
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
@@ -60,7 +60,7 @@ console.log(await openai.getModels())
 // console.log(openai.getSourceDir())
 // openai.createInSourceDir('aaaa')
 
-// openai.createTranscription('./openai_source/audio/Nomeolvides.mp3', (res) => { console.dir(res) })
+// openai.createTranscription(fs.createReadStream('./openai_source/audio/Nomeolvides.mp3'), (res) => { console.dir(res) })
 // console.log(await openai.createTranscription('./openai_source/audio/Nomeolvides.mp3'))
 
 // console.log(await openai.generateImage('A cute baby sea otter', param))
