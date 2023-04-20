@@ -129,7 +129,7 @@ class OpenAIInstance {
   }
 
   async createTranscription(file, options, callback) {
-    const param= utils.initParams(file, options, callback, 'file')
+    const param = utils.initParams(file, options, callback, 'file')
     if (param && param.file) {
       if (!param.model) {
         param.model = 'whisper-1'

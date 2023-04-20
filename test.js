@@ -3,10 +3,11 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-19 17:48:05
+ * @LastEditTime: 2023-04-20 12:05:22
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
+import fs from 'fs'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
   // proxy: 'http://127.0.0.1:19180', // 代理服务器地址：非必填，科学上网时需要

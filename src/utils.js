@@ -62,10 +62,11 @@ const initParams = (str, obj, func, key) => {
     func = obj
     obj = {}
   }
-  // 没传str或者str不为string类型
+  // 没传str或者str不为string类型, isStream适配传入stream情况
   if (typeof str === 'object') {
-    if (Array.isArray(str)) {
-      // 适配/v1/chat/completions接口
+    if (Array.isArray(str) || isStream(str)) {
+      // Array 适配/v1/chat/completions接口
+      // isStream 适配/v1/audio/transcriptions接口 传stream情况
       if (!obj) {
         obj = {}
       }
