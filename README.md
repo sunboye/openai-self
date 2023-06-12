@@ -83,7 +83,9 @@ clearSourceDir      | dir: String类型，非必填     | 无 | 清除聊天产�
   // 关联上下文
   const chatParams = {
     context: 'test-key', // 新增参数：关联上下文参数，以此字段为文件名存放聊天数据；注意：如果传入n参数，n>1时，context参数不再生效，也不再具有关联上下文功能
-    max_tokens: 500
+    max_tokens: 500,
+    // max_str: 2000, // 新增参数：关联上下文时，传给openai接口messages参数最大字数（根据message.content计算），防止上下文太长导致openai报错
+    max_arr: 20 // 新增参数：关联上下文时，传给openai接口messages参数最大长度，防止上下文太长导致openai报错,设置max_str时，此字段不生效
   }
   // 需要删除聊天数据需主动调用delectContext
   openai.clearContext(chatParams.context)

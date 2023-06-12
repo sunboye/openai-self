@@ -57,7 +57,7 @@ class OpenAIInstance {
         param.model = 'gpt-3.5-turbo'
       }
       if (!param.max_tokens) {
-        param.max_tokens = 350
+        param.max_tokens = 500
       }
       if (param.context) {
         if (param.n && param.n > 1) {
@@ -68,7 +68,10 @@ class OpenAIInstance {
           param.messages = msgArr
         }
       }
-      Object.keys(param).includes('context') && delete param.context
+      const paramKeys = Object.keys(param)
+      paramKeys.includes('max_arr') && delete param.max_arr
+      paramKeys.includes('max_str') && delete param.max_str
+      paramKeys.includes('context') && delete param.context
     } else {
       return new Error('param messages is not valid!!!')
     }

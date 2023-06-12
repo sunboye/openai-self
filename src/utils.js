@@ -160,7 +160,25 @@ const readContext = (config, param) => {
       if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
         const buf = fs.readFileSync(filePath)
         const json = JSON.parse(buf)
-        return Array.isArray(json) ? json.concat(param.messages) : param.messages
+        const paramMessages = Array.isArray(json) ? json.concat(param.messages) : param.messages
+        const maxStr = parseInt(param.max_str)
+        const maxArr = parseInt(param.max_arr)
+        let temp = []
+        if (param.max_str && maxStr) {
+          if (paramMessages && paramMessages.length > 1) {
+            const reverse = paramMessages.reverse()
+            let strLen = 0
+            reverse.forEach(item => {
+              if (item.content && item.content.length) {
+                strLen = strLen + item.content.length
+                strLen <= maxStr && temp.push(item)
+              }
+            })
+          }
+        } else if (param.max_arr && maxArr) {
+          temp = paramMessages && (paramMessages.length > maxArr) ? paramMessages.slice(paramMessages.length - maxArr) : paramMessages
+        }
+        return temp && temp.length ? maxStr ? temp.reverse() : temp : param.messages
       } else {
         return param.messages
       }
@@ -235,7 +253,7 @@ const removeSourceDir = (dir) => {
 
 const clearSourceDir = (config, dir) => {
   const rmDir = dir ? path.join(config.sourceDir, dir) : path.join(config.sourceDir)
-  console.log(rmDir)
+  // console.log(rmDir)
   if (fs.existsSync(rmDir)) {
     if (fs.statSync(rmDir).isDirectory()) {
       removeSourceDir(rmDir)

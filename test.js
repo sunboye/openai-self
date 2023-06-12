@@ -3,7 +3,7 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-04-20 12:05:22
+ * @LastEditTime: 2023-06-12 13:32:38
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
@@ -16,7 +16,7 @@ const openai = new openApi({
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
-console.log(await openai.getModels())
+console.log((await openai.getModels()).data.map(item => item.id))
 
 // openai.getModels((res) => {console.log(res)})
 
@@ -31,7 +31,9 @@ console.log(await openai.getModels())
 
 // const chatParams = {
 //   context: 'test-key',
-//   max_tokens: 500
+//   max_tokens: 500,
+//   // max_str: 2000,
+//   max_arr: 20
 // }
 // 清理sourceDir/context目录下文件
 // openai.clearContext(chatParams.context)
@@ -40,7 +42,7 @@ console.log(await openai.getModels())
 // openai.clearSourceDir()
 
 // console.dir(await openai.createChatCompletions('hello', chatParams))
-// await openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams)
+// console.dir(await openai.createChatCompletions('请记住，我的名字叫毛蛋', chatParams))
 // await openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})
 // openai.createChatCompletions('请问我叫什么名字', chatParams, (res) => {console.log(res)})
 
