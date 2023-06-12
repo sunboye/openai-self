@@ -17,6 +17,9 @@
 打包成功后会得到这样一个提示
 > 打包完成，请进入dist目录，确认package.json文件信息，然后进行发布！
 
+`cd dist` 进入dist目录
+`npm publish` 发布包
+
 ### 接口说明
 
 [openai api文档官网入口](https://platform.openai.com/docs/api-reference)
