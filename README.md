@@ -5,7 +5,7 @@
 
 ### 开始
 
-> 建议node版本大于16，低版本可能异常报错
+> 若node运行时，建议node版本大于16，低版本可能异常报错
 
 `npm install` 安装依赖
 
@@ -34,6 +34,7 @@ createTranscription   | /v1/audio/transcriptions | 1. file： 类型-string 或 
 createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
 ### 工具方法
+> 以下方法在浏览器中无法使用
 调用方法             |      参数                  |      返回        | 说明
 :-------------------| :--------------------------| :--------------- | :--------------
 createInSourceDir   | dir: String类型，必填       | 布尔值： 创建结果 | 相对于sourceDir创建文件夹
@@ -87,6 +88,7 @@ clearSourceDir      | dir: String类型，非必填     | 无 | 清除聊天产�
   const chatParams = {
     context: 'test-key', // 新增参数：关联上下文参数，以此字段为文件名存放聊天数据；注意：如果传入n参数，n>1时，context参数不再生效，也不再具有关联上下文功能
     max_tokens: 500,
+    // 在浏览器中运行时,此字段不生效
     // max_str: 2000, // 新增参数：关联上下文时，传给openai接口messages参数最大字数（根据message.content计算），防止上下文太长导致openai报错
     max_arr: 20 // 新增参数：关联上下文时，传给openai接口messages参数最大长度，防止上下文太长导致openai报错,设置max_str时，此字段不生效
   }

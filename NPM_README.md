@@ -7,6 +7,7 @@
   `npm i openai-self`
 
 ### 开始
+> 若node运行时，建议node版本大于16，低版本可能异常报错
 ```javascript
   const OpenAI = require('openai-self');
 
@@ -32,6 +33,7 @@ createTranscription   | /v1/audio/transcriptions | 1. file： 类型-string 或 
 createCustomRequest | any             | 1. url: 类型-string，必填；<br/>2. config：类型-object，非必填，具体参数参考axios的config参数;<br/> 3. callback：类型-function， 回调函数，非必填<br/> | 自定义调用接口
 
 ### 工具方法
+> 以下方法在浏览器中无法使用
 调用方法             |      参数                  |      返回        | 说明
 :-------------------| :--------------------------| :--------------- | :--------------
 createInSourceDir   | dir: String类型，必填       | 布尔值： 创建结果 | 相对于sourceDir创建文件夹
