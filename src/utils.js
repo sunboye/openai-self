@@ -88,6 +88,10 @@ const initParams = (str, obj, func, key) => {
   return params
 }
 
+const checkWindow = () => {
+  return typeof window !== 'undefined'
+}
+
 const getHttpOptions = (enumConf) => {
   const baseOptions = Object.assign({}, enumConf)
   if (enumConf &&  Object.keys(enumConf).length) {
@@ -307,6 +311,7 @@ const getFileStream = (value) => {
 // 暴露方法
 export default {
   axiosDefault,
+  checkWindow,
   initParams,
   getHttpOptions,
   createRequest,

@@ -64,8 +64,8 @@ class OpenAIInstance {
           console.warn('The context parameter is not effective because n>1')
         } else {
           context = param.context
-          const msgArr = utils.readContext(this.configuration, param)
-          param.messages = msgArr
+          // const msgArr = utils.readContext(this.configuration, param)
+          param.messages = utils.checkWindow() ? param.messages : utils.readContext(this.configuration, param)
         }
       }
       const paramKeys = Object.keys(param)
@@ -81,7 +81,7 @@ class OpenAIInstance {
     const resData = res && res.success && res.choices && res.choices.length ? res.choices[0].message : res
     if (context) {
       res.tips = 'If you want to generate multiple chats, please pass in the parameter n. When n>1, the associated context function is no longer supported. You need to handle the associated context yourself!!!'
-      if (resData && resData.content) {
+      if (!utils.checkWindow() && resData && resData.content) {
         param.messages.push(resData)
         const writeContext = param.messages || ''
         utils.saveContext(this.configuration, context, writeContext)
@@ -117,7 +117,7 @@ class OpenAIInstance {
       if (isSave) {
         if (res.success && res.data && res.data.length) {
           const dataTemp = res.data
-          res.data = utils.baseImageSave(this.configuration, dataTemp)
+          res.data = utils.checkWindow() ? res.data : utils.baseImageSave(this.configuration, dataTemp)
           res.type = res.data && res.data.length && res.data[0][ResImageType.local] ? ResImageType.local : param.response_format || ResImageType.url
         }
       }
@@ -143,7 +143,7 @@ class OpenAIInstance {
         callback = param.callback
         delete param.callback
       }
-      param.file = utils.getFileStream(param.file)
+      param.file = utils.checkWindow() ? param.file : utils.getFileStream(param.file)
       const enumOptions = utils.getHttpOptions(Interface.createTranscription)
       enumOptions.data = param
       const res = await utils.createRequest(enumOptions)
@@ -157,16 +157,29 @@ class OpenAIInstance {
     }
   }
   getSourceDir() {
-    return utils.getSourceDir(this.configuration)
+    return utils.checkWindow() ? this.configuration.sourceDir : utils.getSourceDir(this.configuration)
   }
   createInSourceDir(dir) {
-    return dir ? utils.createInSourceDir(this.configuration, dir) : false
+    if (utils.checkWindow()) {
+      console.error('The running environment is a browser and file creation is not allowed')
+      return false
+    } else {
+      return dir ? utils.createInSourceDir(this.configuration, dir) : false
+    }
   }
   clearContext(keyword) {
-    utils.clearContext(this.configuration, keyword)
+    if (utils.checkWindow()) {
+      console.error('The running environment is a browser and file operations are not allowed')
+    } else {
+      utils.clearContext(this.configuration, keyword)
+    }
   }
   clearSourceDir(keyword) {
-    utils.clearSourceDir(this.configuration, keyword)
+    if (utils.checkWindow()) {
+      console.error('The running environment is a browser and file operations are not allowed')
+    } else {
+      utils.clearSourceDir(this.configuration, keyword)
+    }
   }
   // 自定义请求
   async createCustomRequest(url, options, callback) {

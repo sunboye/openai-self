@@ -3,7 +3,7 @@
  * @Position: 
  * @Date: 2023-03-24 16:55:45
  * @LastEditors: yangss
- * @LastEditTime: 2023-06-12 13:32:38
+ * @LastEditTime: 2023-07-21 10:29:34
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
