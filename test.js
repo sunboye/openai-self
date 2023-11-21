@@ -7,7 +7,6 @@
  * @FilePath: \openai-self\test.js
  */
 import openApi from './src/index.js'
-import fs from 'fs'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
   // proxy: 'http://127.0.0.1:19180', // 代理服务器地址：非必填，科学上网时需要
@@ -16,7 +15,7 @@ const openai = new openApi({
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
-console.log((await openai.getModels()).data.map(item => item.id))
+console.log(await openai.getModels())
 
 // openai.getModels((res) => {console.log(res)})
 

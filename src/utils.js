@@ -43,16 +43,20 @@ $axios.interceptors.response.use(function (response) {
 });
 
 const axiosDefault = (config) => {
-  $axios.defaults.baseURL = BASE_PATH
-  $axios.defaults.headers.common['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
+  $axios.defaults.baseURL = config.BASE_PATH ||  BASE_PATH
   $axios.defaults.headers.common['Authorization'] = `Bearer ${config.apiKey}`
   if (config.organizationId) {
     $axios.defaults.headers.common['OpenAI-Organization'] = config.organizationId
   }
-  if (config.proxy) {
-    $axios.defaults.httpsAgent = new httpsProxyAgent(config.proxy).on('error', err => {
-      throw err
-    })
+  if (checkWindow()) {
+    console.log('浏览器环境不用配置User-Agent和proxy')
+  } else {
+    $axios.defaults.headers.common['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
+    if (config.proxy) {
+      $axios.defaults.httpsAgent = new httpsProxyAgent(config.proxy).on('error', err => {
+        throw err
+      })
+    }
   }
 }
 
