@@ -48,9 +48,7 @@ const axiosDefault = (config) => {
   if (config.organizationId) {
     $axios.defaults.headers.common['OpenAI-Organization'] = config.organizationId
   }
-  if (checkWindow()) {
-    console.log('浏览器环境不用配置User-Agent和proxy')
-  } else {
+  if (!checkWindow()) {
     $axios.defaults.headers.common['User-Agent'] = `OpenAI/NodeJS/${pkg.author}/${pkg.version}`
     if (config.proxy) {
       $axios.defaults.httpsAgent = new httpsProxyAgent(config.proxy).on('error', err => {
