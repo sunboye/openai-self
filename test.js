@@ -9,15 +9,15 @@
 import openApi from './src/index.js'
 const openai = new openApi({
   apiKey: process.env.OPENAI_API_KEY || '', // openai的api_Key：必填，可前往openai官网申请
-  // proxy: 'http://127.0.0.1:19180', // 代理服务器地址：非必填，科学上网时需要
+  proxy: '', // 代理服务器地址：非必填，科学上网时需要
   // sourceDir: '', // 内容缓存地址：非必填，默认值为./openai_cache
   // organizationId: '' // 组织机构Id：非必填
 });
 console.log(openai)
 console.log('---------------正在执行测试程序-如果超时-请检查网络连接--------------')
-console.log(await openai.getModels())
+// console.log(await openai.getModels())
 
-// openai.getModels((res) => {console.log(res)})
+// openai.getModels((res) => {console.log(res.data ? res.data.map(i => i.id) : res)})
 
 // openai.createCustomRequest('/v1/models', (res) => { console.log(res.data ? res.data.map(i => i.id) : res) })
 
@@ -25,13 +25,14 @@ console.log(await openai.getModels())
 // console.log(await openai.createNomalCompletions('你好'))
 // openai.createNomalCompletions('你好',  {max_tokens: 400}, (res) => {console.log(res)})
 
-// console.log(await openai.createChatCompletions('你好'))
+// console.log(await openai.createChatCompletions('你好').data)
 
 
 // const chatParams = {
 //   context: 'test-key',
 //   max_tokens: 500,
 //   // max_str: 2000,
+//   stream: true,
 //   max_arr: 20
 // }
 // 清理sourceDir/context目录下文件
